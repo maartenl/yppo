@@ -12,19 +12,31 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  ********************************************************************************/
-package com.mrbear.yourpersonalphotographorganiser.resources;
+package com.mrbear.yppo.resources;
 
+import com.mrbear.yppo.services.GalleryService;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Transactional
 @Path("hello")
 public class RestResource {
-    
+
+    @Inject
+    private GalleryService galleryService;
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public HelloRecord hello(){
-        return new HelloRecord("Hello from Jakarta EE");
+    public List<GalleryRecord> hello(){
+        return galleryService.getGalleries().stream()
+            .map(x -> new GalleryRecord(x))
+            .collect(Collectors.toList());
     }
 }

@@ -12,8 +12,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  ********************************************************************************/
-package com.mrbear.yourpersonalphotographorganiser.resources;
+package com.mrbear.yppo.resources;
 
-public record HelloRecord(String text) {
+import com.mrbear.yppo.entities.Gallery;
 
+public record GalleryRecord(String text) {
+
+  public GalleryRecord(Gallery gallery) {
+    this(gallery.getName());
+  }
 }
