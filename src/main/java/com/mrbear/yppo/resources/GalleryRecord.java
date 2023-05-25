@@ -16,9 +16,10 @@ package com.mrbear.yppo.resources;
 
 import com.mrbear.yppo.entities.Gallery;
 
-public record GalleryRecord(String text) {
+public record GalleryRecord(long id, String name, String description, Long highlight, java.sql.Timestamp creationDate,
+                            Long parentId, int sortorder) {
 
   public GalleryRecord(Gallery gallery) {
-    this(gallery.getName());
+    this(gallery.getId(), gallery.getName(), gallery.getDescription(), gallery.getHighlight(), gallery.getCreationDate(), gallery.getParentId(), gallery.getSortorder());
   }
 }
