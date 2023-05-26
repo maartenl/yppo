@@ -18,9 +18,9 @@ import com.mrbear.yppo.services.GalleryService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +36,7 @@ public class RestResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<GalleryRecord> hello(){
         return galleryService.getGalleries().stream()
-            .map(x -> new GalleryRecord(x))
-            .collect(Collectors.toList());
+            .map(GalleryRecord::new)
+            .toList();
     }
 }
