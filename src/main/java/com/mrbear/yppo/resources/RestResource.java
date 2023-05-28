@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Transactional
-@Path("hello")
+@Path("galleries")
 public class RestResource {
 
     @Inject
