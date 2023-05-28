@@ -7,6 +7,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 public class GalleryService {
@@ -17,5 +18,9 @@ public class GalleryService {
   public List<Gallery> getGalleries() {
     TypedQuery<Gallery> query = entityManager.createNamedQuery("Gallery.findAll", Gallery.class);
     return query.getResultList();
+  }
+
+  public Optional<Gallery> getGallery(Long id) {
+    return Optional.ofNullable(entityManager.find(Gallery.class, id));
   }
 }
