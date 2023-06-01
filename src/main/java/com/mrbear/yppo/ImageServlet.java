@@ -107,7 +107,11 @@ public class ImageServlet extends HttpServlet
         File file = photoService.getFile(id).orElseThrow(() -> new WebApplicationException("File with id " + finalId + " not found!"));
         ImageAngle angle;
         try {
-            angle = photoService.getAngle(id).orElseThrow(() -> new WebApplicationException("Angle not found!"));
+            angle = photoService.getAngle(id).orElseGet(() ->
+            {
+                LOGGER.severe(String.format("Angle not found for file %s!", file.getAbsolutePath()));
+                return null;
+            });
         } catch (ImageProcessingException ex) {
             throw new IOException(ex);
         }
@@ -130,7 +134,7 @@ public class ImageServlet extends HttpServlet
             if (request.getParameter("size") != null) {
                 contentType = "image/png";
                 response.setContentType(contentType);
-                FileOperations.dumpFile(getServletContext().getResourceAsStream("/resources/images/movie.png"), response.getOutputStream());
+                FileOperations.dumpFile(getServletContext().getResourceAsStream("/images/movie.png"), response.getOutputStream());
             } else {
                 contentType = "video/avi";
                 response.setContentType(contentType);
