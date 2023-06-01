@@ -2,11 +2,10 @@ package com.mrbear.yppo;
 
 import com.mrbear.yppo.entities.Gallery;
 import com.mrbear.yppo.entities.GalleryPhotograph;
-import com.mrbear.yppo.entities.Location;
 import com.mrbear.yppo.entities.Photograph;
 import com.mrbear.yppo.services.GalleryService;
 import com.mrbear.yppo.services.LocationService;
-import com.mrbear.yppo.services.PhotosService;
+import com.mrbear.yppo.services.PhotoService;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 public class PhotosServlet extends HttpServlet {
 
   @Inject
-  private PhotosService photosService;
+  private PhotoService photoService;
 
   @Inject
   private GalleryService galleryService;
@@ -82,10 +81,26 @@ public class PhotosServlet extends HttpServlet {
     }
     Gallery gallery = galleryOpt.get();
 
-    List<GalleryPhotograph> photos = photosService.getGalleryPhotographs(id);
-    String description = photos.stream()
-        .map(this::createPhoto)
-        .collect(Collectors.joining());
+    List<GalleryPhotograph> photos = photoService.getGalleryPhotographs(id);
+
+    StringBuilder description = new StringBuilder("""
+            <div class="container text-center">
+              <div class="row">
+              """);
+    int counter = 0;
+    for (GalleryPhotograph photograph: photos) {
+      description.append(createPhoto(photograph));
+      counter++;
+      if (counter == 3) {
+        counter = 0;
+        description.append("""
+                  </div>
+                </div>
+                <div class="container text-center">
+                  <div class="row">
+                """);
+      }
+    }
 
     out.println(String.format("""
         <!doctype html>
@@ -120,20 +135,24 @@ public class PhotosServlet extends HttpServlet {
             <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
           </body>
         </html>
-        """, gallery.getName(), gallery.getDescription(), description));
+        """, gallery.getName(), gallery.getDescription(), description.toString()));
   }
 
   private String createPhoto(GalleryPhotograph galleryPhotograph) {
-    Photograph photograph = photosService.getPhotograph(galleryPhotograph)
+    Photograph photograph = photoService.getPhotograph(galleryPhotograph)
         .orElseThrow(
             () -> new WebApplicationException("Photographs " + galleryPhotograph.getPhotographId() + " not found!"));
-    Location location = locationService.getLocation(photograph.getLocationId())
-        .orElseThrow(() -> new WebApplicationException("Location " + photograph.getLocationId() + " not found!"));
+    return String.format("""
+                <div class="col">
+                  <img src="/yourpersonalphotographorganiser/images?id=%s&size=medium" alt="%s" loading="lazy"/>
+                  <p>%s</p>
+                </div>
+                """,photograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getName());
 
-    return "<li>gal:" + galleryPhotograph.getName() + ":" + galleryPhotograph.getDescription() + ":"
-        + galleryPhotograph.getPhotographId() + "</li><li>fot:" + photograph.getFilename()
-        + ":" + photograph.getRelativepath() + ":" + photograph.getLocationId() + "</li><li>loc:" + location.getId()
-        + ":" + location.getFilepath() + "</li>";
+//    return "<div class=\"col\">gal:" + galleryPhotograph.getName() + ":" + galleryPhotograph.getDescription() + ":"
+//        + galleryPhotograph.getPhotographId() + "<br/>fot:" + photograph.getFilename()
+//        + ":" + photograph.getRelativepath() + ":" + photograph.getLocation() + "</br>loc:" + location.getId()
+//        + ":" + location.getFilepath() + "</div>";
   }
 
   @Override
