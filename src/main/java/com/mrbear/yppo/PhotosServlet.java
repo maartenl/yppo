@@ -25,138 +25,148 @@ import java.util.stream.Collectors;
 /**
  * Shows all photos of a gallery.
  */
-@WebServlet(name = "Photos", urlPatterns = { "/galleries/*" })
-public class PhotosServlet extends HttpServlet {
+@WebServlet(name = "Photos", urlPatterns = {"/galleries/*"})
+public class PhotosServlet extends HttpServlet
+{
 
-  @Inject
-  private PhotoService photoService;
+    @Inject
+    private PhotoService photoService;
 
-  @Inject
-  private GalleryService galleryService;
+    @Inject
+    private GalleryService galleryService;
 
-  @Inject
-  private LocationService locationService;
+    @Inject
+    private LocationService locationService;
 
-  private String createTree(Gallery gallery, List<Gallery> allGalleries) {
-    List<Gallery> kids = allGalleries.stream()
-        .filter(x -> Objects.equals(x.getParentId(), gallery.getId()))
-        .sorted(Comparator.comparingInt(Gallery::getSortorder))
-        .toList();
-    if (kids.isEmpty()) {
-      return String.format("""
-              <li class="list-group-item">
-                  <div class="ms-2 me-auto">
-                          <div class="fw-bold">%s</div>
-                          <a href="/yourpersonalphotographorganiser/galleries/%s">%s</a>
-                        </div>
-              </li>
-          """, gallery.getId(), gallery.getName(), gallery.getDescription());
+    private String createTree(Gallery gallery, List<Gallery> allGalleries)
+    {
+        List<Gallery> kids = allGalleries.stream()
+                .filter(x -> Objects.equals(x.getParentId(), gallery.getId()))
+                .sorted(Comparator.comparingInt(Gallery::getSortorder))
+                .toList();
+        if (kids.isEmpty()) {
+            return String.format("""
+                        <li class="list-group-item">
+                            <div class="ms-2 me-auto">
+                                    <div class="fw-bold">%s</div>
+                                    <a href="/yourpersonalphotographorganiser/galleries/%s">%s</a>
+                                  </div>
+                        </li>
+                    """, gallery.getId(), gallery.getName(), gallery.getDescription());
+        }
+        String subTree = kids.stream()
+                .map(x -> createTree(x, allGalleries))
+                .collect(Collectors.joining());
+        return String.format("""
+                        <li class="list-group-item"><div class="ms-2 me-auto">
+                                          <div class="fw-bold"><a href="/galleries/%s">%s</a></div>
+                                          %s
+                                        </div><ul class="list-group">%s</ul></li>
+                        """, gallery.getId(), gallery.getName(), gallery.getDescription(),
+                subTree);
     }
-    String subTree = kids.stream()
-        .map(x -> createTree(x, allGalleries))
-        .collect(Collectors.joining());
-    return String.format("""
-            <li class="list-group-item"><div class="ms-2 me-auto">
-                              <div class="fw-bold"><a href="/galleries/%s">%s</a></div>
-                              %s
-                            </div><ul class="list-group">%s</ul></li>
-            """, gallery.getId(), gallery.getName(), gallery.getDescription(),
-        subTree);
-  }
 
-  @Override
-  protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    // Setting up the content type of web page
-    resp.setContentType("text/html");
-    // Writing the message on the web page
-    PrintWriter out = resp.getWriter();
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+    {
+        // Setting up the content type of web page
+        resp.setContentType("text/html");
+        // Writing the message on the web page
+        PrintWriter out = resp.getWriter();
 
-    // for example: /yourpersonalphotographorganiser/galleries/1
-    String[] requestURI = req.getRequestURI().split("/");
-    Long id = Long.valueOf(requestURI[requestURI.length - 1]);
-    Optional<Gallery> galleryOpt = galleryService.getGallery(id);
-    if (galleryOpt.isEmpty()) {
-      out.println("Gallery not found.");
-      return;
-    }
-    Gallery gallery = galleryOpt.get();
+        // for example: /yourpersonalphotographorganiser/galleries/1
+        String[] requestURI = req.getRequestURI().split("/");
+        Long id = Long.valueOf(requestURI[requestURI.length - 1]);
+        Optional<Gallery> galleryOpt = galleryService.getGallery(id);
+        if (galleryOpt.isEmpty()) {
+            out.println("Gallery not found.");
+            return;
+        }
+        Gallery gallery = galleryOpt.get();
 
-    List<GalleryPhotograph> photos = photoService.getGalleryPhotographs(id);
+        List<GalleryPhotograph> photos = photoService.getGalleryPhotographs(id);
 
-    StringBuilder description = new StringBuilder("""
-            <div class="container text-center">
-              <div class="row">
-              """);
-    int counter = 0;
-    for (GalleryPhotograph photograph: photos) {
-      description.append(createPhoto(photograph));
-      counter++;
-      if (counter == 3) {
-        counter = 0;
-        description.append("""
-                  </div>
-                </div>
+        StringBuilder description = new StringBuilder("""
                 <div class="container text-center">
                   <div class="row">
-                """);
-      }
+                  """);
+        int counter = 0;
+        for (GalleryPhotograph photograph : photos) {
+            description.append(createPhoto(photograph));
+            counter++;
+            if (counter == 3) {
+                counter = 0;
+                description.append("""
+                          </div>
+                        </div>
+                        <div class="container text-center">
+                          <div class="row">
+                        """);
+            }
+        }
+
+        out.println(String.format("""
+                <!doctype html>
+                <html lang="en">
+                  <head>
+                    <meta charset="utf-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <title>Your Personal Photograph Organiser</title>
+                    <link href="../css/bootstrap.css" rel="stylesheet">
+                    <link
+                            rel="stylesheet"
+                            href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"
+                    />
+                  </head>
+                  <body>
+                    <div class="container">
+                      <div class="row">
+                        <div class="col">
+                        <h1>%s</h1>
+                        <div class="alert alert-primary" role="alert">
+                          <a href="/yourpersonalphotographorganiser/galleries" class="alert-link">Back to galleries</a>.
+                        </div>
+                        <div class="alert alert-primary" role="alert">
+                          %s
+                        </div>
+                        %s
+                          </div>
+                        </div>
+                      </div>
+                    <script src="../js/jquery-3.7.0.min.js"></script>
+                    <script src="../js/bootstrap.bundle.js"></script>
+                    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+                  </body>
+                </html>
+                """, gallery.getName(), gallery.getDescription(), description.toString()));
     }
 
-    out.println(String.format("""
-        <!doctype html>
-        <html lang="en">
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>Your Personal Photograph Organiser</title>
-            <link href="../css/bootstrap.css" rel="stylesheet">
-            <link
-                    rel="stylesheet"
-                    href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"
-            />
-          </head>
-          <body>
-            <div class="container">
-              <div class="row">
-                <div class="col">
-                <h1>%s</h1>
-                <div class="alert alert-primary" role="alert">
-                  <a href="/yourpersonalphotographorganiser/galleries" class="alert-link">Back to galleries</a>.
-                </div>
-                <div class="alert alert-primary" role="alert">
-                  %s
-                </div>
-                %s
-                  </div>
-                </div>
-              </div>
-            <script src="../js/jquery-3.7.0.min.js"></script>
-            <script src="../js/bootstrap.bundle.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
-          </body>
-        </html>
-        """, gallery.getName(), gallery.getDescription(), description.toString()));
-  }
-
-  private String createPhoto(GalleryPhotograph galleryPhotograph) {
-    Photograph photograph = photoService.getPhotograph(galleryPhotograph)
-        .orElseThrow(
-            () -> new WebApplicationException("Photographs " + galleryPhotograph.getPhotographId() + " not found!"));
-    return String.format("""
+    private String createPhoto(GalleryPhotograph galleryPhotograph)
+    {
+        Photograph photograph = photoService.getPhotograph(galleryPhotograph)
+                .orElseThrow(
+                        () -> new WebApplicationException("Photographs " + galleryPhotograph.getPhotographId() + " not found!"));
+        String description = "";
+        if (galleryPhotograph.getDescription() != null && !galleryPhotograph.getDescription().isBlank()) {
+            description = String.format("<p>%s</p>", galleryPhotograph.getDescription());
+        }
+        return String.format("""
                 <div class="col">
                   <img src="/yourpersonalphotographorganiser/images?id=%s&size=medium" alt="%s" loading="lazy"/>
                   <p>%s</p>
+                  %s                  
                 </div>
-                """,photograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getName());
+                """, photograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), description);
 
 //    return "<div class=\"col\">gal:" + galleryPhotograph.getName() + ":" + galleryPhotograph.getDescription() + ":"
 //        + galleryPhotograph.getPhotographId() + "<br/>fot:" + photograph.getFilename()
 //        + ":" + photograph.getRelativepath() + ":" + photograph.getLocation() + "</br>loc:" + location.getId()
 //        + ":" + location.getFilepath() + "</div>";
-  }
+    }
 
-  @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    super.doPost(req, resp);
-  }
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
+    {
+        super.doPost(req, resp);
+    }
 }
