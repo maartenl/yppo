@@ -20,7 +20,6 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
-import com.drew.metadata.MetadataException;
 import com.drew.metadata.Tag;
 import com.drew.metadata.exif.ExifDirectoryBase;
 import com.drew.metadata.exif.ExifIFD0Directory;
@@ -32,8 +31,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -198,18 +197,19 @@ public class ImageOperations {
 
   /**
    * Returns the date and time when the photograph was taken, null if unable to retrieve.
+   *
    * @param jpegFile a file containing an image.
    * @return date or null if unable to determine the date when the photograph was taken
    * @throws ImageProcessingException an image processing error occurred when
-   * interpreting the image.
-   * @throws IOException an error occurred when reading the file
+   *                                  interpreting the image.
+   * @throws IOException              an error occurred when reading the file
    */
-  public static Date getDateTimeTaken(File jpegFile) throws ImageProcessingException, IOException {
+  public static Optional<Instant> getDateTimeTaken(File jpegFile) throws ImageProcessingException, IOException {
     Metadata metadata = ImageMetadataReader.readMetadata(jpegFile);
     Directory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
     if (directory == null) {
       return null;
     }
-    return directory.getDate(ExifDirectoryBase.TAG_DATETIME_ORIGINAL);
+    return Optional.ofNullable(directory.getDate(ExifDirectoryBase.TAG_DATETIME_ORIGINAL)).map(x -> x.toInstant());
   }
 }

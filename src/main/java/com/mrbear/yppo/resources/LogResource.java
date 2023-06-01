@@ -14,8 +14,12 @@
  ********************************************************************************/
 package com.mrbear.yppo.resources;
 
-import com.mrbear.yppo.services.GalleryService;
+import com.mrbear.yppo.services.LogService;
+import jakarta.batch.operations.JobOperator;
+import jakarta.batch.runtime.BatchRuntime;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -23,20 +27,21 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 @Transactional
-@Path("galleries")
-public class RestResource {
+@Path("log")
+public class LogResource
+{
 
     @Inject
-    private GalleryService galleryService;
+    private LogService logService;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<GalleryRecord> hello(){
-        return galleryService.getGalleries().stream()
-            .map(GalleryRecord::new)
-            .toList();
+    public List<LogRecord> list()
+    {
+        return logService.getLog().stream().map(x -> new LogRecord(x.getId(), x.getMessage(), x.getDescription(), x.getCreationDate(), x.getLoglevel())).toList();
     }
 }
