@@ -38,10 +38,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author maartenl
  */
-@Transactional
 @Named("addPhotographReader")
 public class Reader extends AbstractItemReader
 {
@@ -64,13 +62,16 @@ public class Reader extends AbstractItemReader
     private Location getLocation() throws JobSecurityException, NumberFormatException, RuntimeException, NoSuchJobExecutionException
     {
         Properties jobParameters = BatchRuntime.getJobOperator().getParameters(jobContext.getExecutionId());
-        Long locationId = Long.parseLong((String) jobParameters.get("location"));
+        // TODO : Mrbear: make it a "proper" job parameter.
+        String locationIdString = (String) jobParameters.get("location");
+        Long locationId = locationIdString == null ? 1L : Long.parseLong(locationIdString);
         logger.log(Level.FINEST, "location id={0}", locationId);
         Location location = locationService.getLocation(locationId).orElseThrow(() -> new RuntimeException("Location with id " + locationId + " not found."));
         logger.log(Level.FINEST, "location={0}", location.getFilepath());
         return location;
     }
 
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     @Override
     public void open(Serializable checkpoint) throws Exception
     {

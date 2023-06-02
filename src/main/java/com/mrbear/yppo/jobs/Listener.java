@@ -35,7 +35,7 @@ public abstract class Listener implements JobListener, StepListener
     private static final Logger logger = Logger.getLogger(Listener.class.getName());
 
     @Inject
-    private LogService logBean;
+    private LogService logService;
 
     protected abstract String getName();
 
@@ -43,28 +43,28 @@ public abstract class Listener implements JobListener, StepListener
     public void beforeJob() throws Exception
     {
         logger.log(Level.INFO, "Job Started: {0}", getName());
-        logBean.createLog(getName(), "Job Started: " + getName(), null, LogLevel.INFO);
+        logService.createLog(getName(), "Job Started: " + getName(), null, LogLevel.INFO);
     }
 
     @Override
     public void afterJob() throws Exception
     {
         logger.log(Level.INFO, "Job Ended: {0}", getName());
-        logBean.createLog(getName(), "Job Ended: " + getName(), null, LogLevel.INFO);
+        logService.createLog(getName(), "Job Ended: " + getName(), null, LogLevel.INFO);
     }
 
     @Override
     public void beforeStep() throws Exception
     {
         logger.log(Level.INFO, "Step Started: {0}", getName());
-        logBean.createLog(getName(), "Step Started: " + getName(), null, LogLevel.INFO);
+        logService.createLog(getName(), "Step Started: " + getName(), null, LogLevel.INFO);
     }
 
     @Override
     public void afterStep() throws Exception
     {
         logger.log(Level.INFO, "Step Ended: {0}", getName());
-        logBean.createLog(getName(), "Step Ended: " + getName(), null, LogLevel.INFO);
+        logService.createLog(getName(), "Step Ended: " + getName(), null, LogLevel.INFO);
     }
 
 }

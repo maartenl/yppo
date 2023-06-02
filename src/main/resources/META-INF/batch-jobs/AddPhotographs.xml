@@ -17,17 +17,22 @@
  
 -->
 <job id="AddPhotographs" xmlns="https://jakarta.ee/xml/ns/jakartaee" version="2.0" restartable="false">
-<!--    <listeners>-->
-<!--        <listener ref="addPhotographListener"/>-->
-<!--    </listeners>-->
-    <step id="MainStep" start-limit="50" allow-start-if-complete="false" >
-<!--        <listeners>-->
-<!--            <listener ref="addPhotographListener"/>-->
-<!--        </listeners>-->
+    <listeners>
+        <listener ref="addPhotographListener"/>
+    </listeners>
+    <step id="MainStep" start-limit="50" allow-start-if-complete="false">
+        <listeners>
+            <listener ref="addPhotographListener"/>
+        </listeners>
         <chunk checkpoint-policy="item" item-count="4" time-limit="0" skip-limit="0" retry-limit="1">
-            <reader ref="addPhotographReader"/>
+            <reader ref="addPhotographReader">
+                <properties>
+                    <property name="infile.name" value="file#\{partitionPlan['myPartitionNumber']}.txt"/>
+                    <property name="outfile.name" value="#\{partitionPlan['outFile']}"/>
+                </properties>
+            </reader>
             <processor ref="addPhotographProcessor"/>
             <writer ref="addPhotographWriter"/>
-        </chunk> 
+        </chunk>
     </step>
 </job>

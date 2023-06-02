@@ -25,7 +25,6 @@ import jakarta.transaction.Transactional;
  * @author maartenl
  */
 @Named("addPhotographListener")
-@Transactional
 public class AddListener extends Listener
 {
 

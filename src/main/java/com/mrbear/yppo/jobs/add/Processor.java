@@ -24,7 +24,6 @@ import com.mrbear.yppo.entities.LogLevel;
 import com.mrbear.yppo.entities.Photograph;
 import com.mrbear.yppo.enums.ImageAngle;
 import com.mrbear.yppo.images.ImageOperations;
-import com.mrbear.yppo.services.LocationService;
 import com.mrbear.yppo.services.LogService;
 import jakarta.batch.api.chunk.ItemProcessor;
 import jakarta.batch.operations.JobSecurityException;
@@ -57,17 +56,14 @@ import java.util.logging.Logger;
  * Processes a new photograph, by retrieving its data and adding
  * it to the database.</p>
  */
-@Transactional
 @Named("addPhotographProcessor")
 public class Processor implements ItemProcessor
 {
 
     private static final Logger logger = Logger.getLogger(Processor.class.getName());
 
-    private LocationService locationService;
-
     @Inject
-    private LogService logBean;
+    private LogService logService;
 
     @Inject
     private JobContext jobContext;
@@ -78,9 +74,11 @@ public class Processor implements ItemProcessor
     private Location getLocation() throws JobSecurityException, NumberFormatException, RuntimeException, NoSuchJobExecutionException
     {
         Properties jobParameters = BatchRuntime.getJobOperator().getParameters(jobContext.getExecutionId());
-        long locationId = Long.parseLong((String) jobParameters.get("location"));
+        // TODO : Mrbear: make it a "proper" job parameter.
+        String locationIdString = (String) jobParameters.get("location");
+        Long locationId = locationIdString == null ? 1L : Long.parseLong(locationIdString);
         logger.log(Level.FINEST, "location id={0}", locationId);
-        Optional<Location> location = locationService.getLocation(locationId);
+        Optional<Location> location = Optional.ofNullable(entityManager.find(Location.class, locationId));
         if (location.isEmpty())
         {
             throw new RuntimeException("Location with id " + locationId + " not found.");
@@ -89,6 +87,7 @@ public class Processor implements ItemProcessor
         return location.get();
     }
 
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     @Override
     public Object processItem(Object item) throws Exception
     {
@@ -111,10 +110,10 @@ public class Processor implements ItemProcessor
             PrintWriter printWriter = new PrintWriter(stackTrace);
             e.printStackTrace(printWriter);
             log("Unable to add photograph "
-                            + item
-                            + " to location "
-                            + location.getId()
-                            + ", exception " + e.getClass().getName() + " caught.", stackTrace.toString(), LogLevel.ERROR);
+                    + item
+                    + " to location "
+                    + location.getId()
+                    + ", exception " + e.getClass().getName() + " caught.", stackTrace.toString(), LogLevel.ERROR);
         }
         return null;
     }
@@ -227,6 +226,6 @@ public class Processor implements ItemProcessor
 
     private void log(String errormessage, String description, LogLevel logLevel)
     {
-        logBean.createLog("addPhotograph", errormessage, description, logLevel);
+        logService.createLog("addPhotograph", errormessage, description, logLevel);
     }
 }

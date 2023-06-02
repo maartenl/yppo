@@ -35,7 +35,6 @@ import java.util.logging.Logger;
  *
  * @author maartenl
  */
-@Transactional
 @Named("addPhotographWriter")
 public class Writer extends AbstractItemWriter
 {
@@ -66,6 +65,7 @@ public class Writer extends AbstractItemWriter
         logger.finest("addPhotographWriter close");
     }
 
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     @Override
     public void writeItems(List<Object> items) throws Exception
     {

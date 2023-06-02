@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  *
  * @author maartenl
  */
-@Transactional(Transactional.TxType.REQUIRES_NEW)
+ @Transactional(Transactional.TxType.REQUIRES_NEW)
 public class LogService
 {
 

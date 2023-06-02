@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.mrbear</groupId>
@@ -8,17 +8,23 @@
     <packaging>war</packaging>
 
     <name>yourpersonalphotographorganiser</name>
-    
+
     <properties>
-        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.report.sourceEncoding>UTF-8</project.report.sourceEncoding>
+        <maven.compiler.release>17</maven.compiler.release>
+        <jakartaee-api.version>10.0.0</jakartaee-api.version>
+        <payara.version>6.2023.5</payara.version>
+        <compiler-plugin.version>3.10.1</compiler-plugin.version>
+        <war-plugin.version>3.3.2</war-plugin.version>
+        <cargo.version>1.10.4</cargo.version>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
-            <version>10.0.0</version>
+            <version>${jakartaee-api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -27,21 +33,37 @@
             <version>2.18.0</version>
         </dependency>
     </dependencies>
-    
+
     <build>
         <finalName>yourpersonalphotographorganiser</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>${compiler-plugin.version}</version>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.2</version>
+                <version>${war-plugin.version}</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+
+            <!-- Execute 'mvn clean package cargo:run' to run the application. -->
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven3-plugin</artifactId>
+                <version>${cargo.version}</version>
+                <configuration>
+                    <container>
+                        <containerId>payara</containerId>
+                        <artifactInstaller>
+                            <groupId>fish.payara.distributions</groupId>
+                            <artifactId>payara</artifactId>
+                            <version>${payara.version}</version>
+                        </artifactInstaller>
+                    </container>
                 </configuration>
             </plugin>
         </plugins>

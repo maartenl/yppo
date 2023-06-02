@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -208,8 +209,8 @@ public class ImageOperations {
     Metadata metadata = ImageMetadataReader.readMetadata(jpegFile);
     Directory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
     if (directory == null) {
-      return null;
+      return Optional.empty();
     }
-    return Optional.ofNullable(directory.getDate(ExifDirectoryBase.TAG_DATETIME_ORIGINAL)).map(x -> x.toInstant());
+    return Optional.ofNullable(directory.getDate(ExifDirectoryBase.TAG_DATETIME_ORIGINAL)).map(Date::toInstant);
   }
 }

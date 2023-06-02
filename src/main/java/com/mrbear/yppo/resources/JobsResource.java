@@ -19,6 +19,7 @@ import jakarta.batch.runtime.BatchRuntime;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
@@ -26,42 +27,45 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-@Transactional
 @Path("jobs")
 public class JobsResource
 {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<JobName> list() {
+    public List<JobName> list()
+    {
         JobOperator jobOperator = BatchRuntime.getJobOperator();
         return jobOperator.getJobNames().stream().map(JobName::new).collect(Collectors.toList());
     }
 
     @GET
-    @Path("add/start")
+    @Path("{jobname}/start")
     @Produces(MediaType.APPLICATION_JSON)
-    public ExecutionJobRecord start(){
+    public ExecutionJobRecord start(@PathParam("jobname") String jobname)
+    {
         JobOperator jobOperator = BatchRuntime.getJobOperator();
-        long executionId = jobOperator.start("AddPhotographs", new Properties());
-        return new ExecutionJobRecord(executionId, "add", "started");
+        long executionId = jobOperator.start(jobname, new Properties());
+        return new ExecutionJobRecord(executionId, jobname, "started");
     }
 
     @GET
-    @Path("add/stop/{executionId}")
+    @Path("{jobname}/stop/{executionId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ExecutionJobRecord stop(long executionId){
+    public ExecutionJobRecord stop(@PathParam("jobname") String jobname, @PathParam("executionId") long executionId)
+    {
         JobOperator jobOperator = BatchRuntime.getJobOperator();
         jobOperator.stop(executionId);
-        return new ExecutionJobRecord(executionId, "add", "stopped");
+        return new ExecutionJobRecord(executionId, jobname, "stopped");
     }
 
     @GET
-    @Path("add/restart/{executionId}")
+    @Path("{jobname}/restart/{executionId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ExecutionJobRecord restart(long executionId){
+    public ExecutionJobRecord restart(@PathParam("jobname") String jobname, @PathParam("executionId") long executionId)
+    {
         JobOperator jobOperator = BatchRuntime.getJobOperator();
         jobOperator.restart(executionId, new Properties());
-        return new ExecutionJobRecord(executionId, "add", "restarted");
+        return new ExecutionJobRecord(executionId, jobname, "restarted");
     }
 }
