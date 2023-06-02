@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  *
  * @author maartenl
  */
- @Transactional(Transactional.TxType.REQUIRES_NEW)
+@Transactional(Transactional.TxType.REQUIRES_NEW)
 public class LogService
 {
 
@@ -55,7 +55,8 @@ public class LogService
         return query.executeUpdate();
     }
 
-    public List<Log> getLog() {
+    public List<Log> getLog()
+    {
         TypedQuery<Log> query = entityManager.createNamedQuery("Log.findFirstHundred", Log.class).setMaxResults(100);
         return query.getResultList();
     }
