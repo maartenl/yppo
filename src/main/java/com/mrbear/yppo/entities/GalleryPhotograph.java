@@ -82,7 +82,7 @@ public class GalleryPhotograph
 
     public void setDescription(String description)
     {
-        this.description = description;
+        this.description = Utils.getValue(description);
     }
 
     public Long getSortorder()
@@ -98,10 +98,12 @@ public class GalleryPhotograph
     @Override
     public boolean equals(Object o)
     {
-        if (this == o) {
+        if (this == o)
+        {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || getClass() != o.getClass())
+        {
             return false;
         }
         GalleryPhotograph that = (GalleryPhotograph) o;

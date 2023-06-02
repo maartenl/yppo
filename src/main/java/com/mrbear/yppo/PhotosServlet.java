@@ -96,7 +96,7 @@ public class PhotosServlet extends HttpServlet
                           <h1>%s</h1>
                           <div class="alert alert-primary" role="alert">
                             <a href="/yourpersonalphotographorganiser/galleries" class="btn btn-primary btn-sm">Back to galleries</a>
-                            <a class="btn btn-primary btn-sm" data-bs-toggle="collapse" href="#galleryFormId" role="button" aria-expanded="false" aria-controls="galleryFormId">Edit</a>
+                            <a class="btn btn-primary btn-sm" data-bs-toggle="collapse" data-bs-target=".collapsed-forms" role="button" aria-expanded="false" aria-controls=".collapsed-forms">Edit</a>
                           </div>
                           <div class="alert alert-primary" role="alert">
                             %s
@@ -104,10 +104,10 @@ public class PhotosServlet extends HttpServlet
                         </div>
                       </div>
                     </div>
-                    <div class="container collapse" id="galleryFormId">
+                    <div class="container collapse collapsed-forms">
                       <div class="row">
                         <div class="col">
-                          <form method="POST">
+                          <form method="POST" onsubmit="return false;">
                             <input type="hidden" class="form-control" name="galleryId" id="galleryId" value="%s">
                             <div class="mb-3">
                               <label for="galleryName" class="form-label">Gallery name</label>
@@ -143,23 +143,55 @@ public class PhotosServlet extends HttpServlet
             description = String.format("<p>%s</p>", galleryPhotograph.getDescription());
         }
         return String.format("""
-                <div class="col">
-                  <img src="/yourpersonalphotographorganiser/images?id=%s&size=medium" alt="%s" loading="lazy"/>
-                  <p>%s</p>
-                  %s                  
-                </div>
-                """, photograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), description);
+                        <div class="col">
+                          <img src="/yourpersonalphotographorganiser/images?id=%s&size=medium" alt="%s" loading="lazy"/>
+                          <p>%s</p>
+                          %s                  
+                                <div class="collapse collapsed-forms">
+                                    <form method="POST">
+                                      <input type="hidden" class="form-control" name="galleryPhotographId" id="galleryPhotographId" value="%s">
+                                      <div class="mb-3">
+                                        <label for="galleryPhotographName" class="form-label">Name</label>
+                                        <input type="text" class="form-control" name="galleryPhotographName" id="galleryPhotographName" value="%s">
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="galleryPhotographDescription" class="form-label">Description</label>
+                                        <textarea class="form-control" name="galleryPhotographDescription" id="galleryPhotographDescription" rows="6">%s</textarea>
+                                      </div>
+                                      <div>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                      </div>
+                                    </form>
+                                  </div>
+                        </div>
+                        """, photograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), description,
+                galleryPhotograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getDescription());
     }
 
     @Transactional
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
+        String[] requestURI = req.getRequestURI().split("/");
+        Long id = Long.valueOf(requestURI[requestURI.length - 1]);
+
         String galleryId = req.getParameter("galleryId");
         String galleryName = req.getParameter("galleryName");
         String galleryDescription = req.getParameter("galleryDescription");
-        LOGGER.finest(String.format("doPost %s,%s,%s", galleryId, galleryName, galleryDescription));
-        galleryService.updateGallery(Long.valueOf(galleryId), galleryName, galleryDescription);
+        if (galleryId != null && !galleryId.isBlank())
+        {
+            LOGGER.finest(String.format("doPost Gallery %s,%s,%s", galleryId, galleryName, galleryDescription));
+            galleryService.updateGallery(Long.valueOf(galleryId), galleryName, galleryDescription);
+        }
+
+        String galleryPhotographId = req.getParameter("galleryPhotographId");
+        String galleryPhotographName = req.getParameter("galleryPhotographName");
+        String galleryPhotographDescription = req.getParameter("galleryPhotographDescription");
+        if (galleryPhotographId != null && !galleryPhotographId.isBlank())
+        {
+            LOGGER.finest(String.format("doPost galleryPhotograph %s,%s,%s", galleryPhotographId, galleryPhotographName, galleryPhotographDescription));
+            photoService.updateGalleryPhotograph(Long.valueOf(galleryPhotographId), galleryPhotographName, galleryPhotographDescription);
+        }
 
         // Writing the message on the web page
         PrintWriter out = resp.getWriter();
@@ -185,6 +217,6 @@ public class PhotosServlet extends HttpServlet
                           </div>
                         </div>
                       </div>
-                    </div>""", galleryId));
+                    </div>""", id));
     }
 }

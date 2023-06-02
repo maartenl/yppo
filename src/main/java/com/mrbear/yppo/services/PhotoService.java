@@ -20,40 +20,55 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Transactional
-public class PhotoService {
+public class PhotoService
+{
 
-  @PersistenceContext(unitName = "yppo")
-  private EntityManager entityManager;
+    private static final Logger LOGGER = Logger.getLogger(PhotoService.class.getName());
 
-  public List<GalleryPhotograph> getGalleryPhotographs(Long galleryId) {
-    TypedQuery<GalleryPhotograph> query = entityManager.createNamedQuery("GalleryPhotograph.findAll",
-        GalleryPhotograph.class).setParameter("galleryId", galleryId);
-    return query.getResultList();
-  }
+    @PersistenceContext(unitName = "yppo")
+    private EntityManager entityManager;
 
-  public Optional<Photograph> getPhotograph(Long id) {
-    return Optional.ofNullable(entityManager.find(Photograph.class, id));
-  }
-
-  public Optional<File> getFile(Long id)
-  {
-    Optional<Photograph> photoOpt = getPhotograph(id);
-    if (photoOpt.isEmpty())
+    public List<GalleryPhotograph> getGalleryPhotographs(Long galleryId)
     {
-      return Optional.empty();
+        TypedQuery<GalleryPhotograph> query = entityManager.createNamedQuery("GalleryPhotograph.findAll",
+                GalleryPhotograph.class).setParameter("galleryId", galleryId);
+        return query.getResultList();
     }
-    Photograph photo = photoOpt.get();
-    java.nio.file.Path newPath = FileSystems.getDefault().getPath(photo.getLocation().getFilepath(), photo.getRelativepath(), photo.getFilename());
-    File file = newPath.toFile();
-    return Optional.of(file);
-  }
 
-  public Optional<ImageAngle> getAngle(Long id) throws ImageProcessingException, IOException, MetadataException
-  {
-    Logger.getLogger(PhotoService.class.getName()).log(Level.FINE, "getAngle {0}", id);
-    Photograph photo = getPhotograph(id).orElseThrow(() -> new WebApplicationException("Photograph " + id + " not found."));
-    Logger.getLogger(PhotoService.class.getName()).log(Level.FINE, "getAngle returns {0}", photo.getAngle());
-    return photo.getAngle();
-  }
+    public Optional<Photograph> getPhotograph(Long id)
+    {
+        return Optional.ofNullable(entityManager.find(Photograph.class, id));
+    }
 
+    public Optional<File> getFile(Long id)
+    {
+        Optional<Photograph> photoOpt = getPhotograph(id);
+        if (photoOpt.isEmpty())
+        {
+            return Optional.empty();
+        }
+        Photograph photo = photoOpt.get();
+        java.nio.file.Path newPath = FileSystems.getDefault().getPath(photo.getLocation().getFilepath(), photo.getRelativepath(), photo.getFilename());
+        File file = newPath.toFile();
+        return Optional.of(file);
+    }
+
+    public Optional<ImageAngle> getAngle(Long id) throws ImageProcessingException, IOException, MetadataException
+    {
+        Logger.getLogger(PhotoService.class.getName()).log(Level.FINE, "getAngle {0}", id);
+        Photograph photo = getPhotograph(id).orElseThrow(() -> new WebApplicationException("Photograph " + id + " not found."));
+        Logger.getLogger(PhotoService.class.getName()).log(Level.FINE, "getAngle returns {0}", photo.getAngle());
+        return photo.getAngle();
+    }
+
+    public void updateGalleryPhotograph(Long galleryPhotographId, String galleryPhotographName, String galleryPhotographDescription)
+    {
+        LOGGER.finest(String.format("Changing data on galleryPhotograph %s", galleryPhotographId));
+        Optional.ofNullable(entityManager.find(GalleryPhotograph.class, galleryPhotographId)).ifPresent(galleryPhotograph ->
+        {
+            galleryPhotograph.setName(galleryPhotographName);
+            galleryPhotograph.setDescription(galleryPhotographDescription);
+        });
+    }
 }
+
