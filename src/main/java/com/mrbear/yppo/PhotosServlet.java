@@ -143,9 +143,7 @@ public class PhotosServlet extends HttpServlet
 
     private String createPhoto(GalleryPhotograph galleryPhotograph)
     {
-        Photograph photograph = photoService.getPhotograph(galleryPhotograph)
-                .orElseThrow(
-                        () -> new WebApplicationException("Photographs " + galleryPhotograph.getPhotographId() + " not found!"));
+        Photograph photograph = galleryPhotograph.getPhotograph();
         String description = "";
         if (galleryPhotograph.getDescription() != null && !galleryPhotograph.getDescription().isBlank()) {
             description = String.format("<p>%s</p>", galleryPhotograph.getDescription());
@@ -157,11 +155,6 @@ public class PhotosServlet extends HttpServlet
                   %s                  
                 </div>
                 """, photograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), description);
-
-//    return "<div class=\"col\">gal:" + galleryPhotograph.getName() + ":" + galleryPhotograph.getDescription() + ":"
-//        + galleryPhotograph.getPhotographId() + "<br/>fot:" + photograph.getFilename()
-//        + ":" + photograph.getRelativepath() + ":" + photograph.getLocation() + "</br>loc:" + location.getId()
-//        + ":" + location.getFilepath() + "</div>";
     }
 
     @Override

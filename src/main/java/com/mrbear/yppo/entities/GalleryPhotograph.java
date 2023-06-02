@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "GalleryPhotograph")
-@NamedQuery(name = "GalleryPhotograph.findAll", query = "SELECT p FROM GalleryPhotograph p where p.galleryId = :galleryId order by p.sortorder")
+@NamedQuery(name = "GalleryPhotograph.findAll", query = "SELECT p FROM GalleryPhotograph p where p.galleryId = :galleryId order by p.sortorder, p.photograph.taken")
 public class GalleryPhotograph
 {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +22,9 @@ public class GalleryPhotograph
     @Basic
     @Column(name = "gallery_id")
     private long galleryId;
-    @Basic
-    @Column(name = "photograph_id")
-    private long photographId;
+    @JoinColumn(name = "photograph_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Photograph photograph;
     @Basic
     @Column(name = "name")
     private String name;
@@ -55,14 +55,14 @@ public class GalleryPhotograph
         this.galleryId = galleryId;
     }
 
-    public long getPhotographId()
+    public Photograph getPhotograph()
     {
-        return photographId;
+        return photograph;
     }
 
-    public void setPhotographId(long photographId)
+    public void setPhotograph(Photograph photograph)
     {
-        this.photographId = photographId;
+        this.photograph = photograph;
     }
 
     public String getName()
@@ -105,7 +105,7 @@ public class GalleryPhotograph
             return false;
         }
         GalleryPhotograph that = (GalleryPhotograph) o;
-        return id == that.id && galleryId == that.galleryId && photographId == that.photographId && Objects.equals(
+        return id == that.id && galleryId == that.galleryId && photograph == that.photograph && Objects.equals(
                 name, that.name) && Objects.equals(description, that.description) && Objects.equals(sortorder,
                 that.sortorder);
     }
@@ -113,6 +113,6 @@ public class GalleryPhotograph
     @Override
     public int hashCode()
     {
-        return Objects.hash(id, galleryId, photographId, name, description, sortorder);
+        return Objects.hash(id, galleryId, photograph, name, description, sortorder);
     }
 }

@@ -31,10 +31,6 @@ public class PhotoService {
     return query.getResultList();
   }
 
-  public Optional<Photograph> getPhotograph(GalleryPhotograph galleryPhotograph) {
-    return getPhotograph(galleryPhotograph.getPhotographId());
-  }
-
   public Optional<Photograph> getPhotograph(Long id) {
     return Optional.ofNullable(entityManager.find(Photograph.class, id));
   }
