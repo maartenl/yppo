@@ -107,7 +107,7 @@ public class PhotosServlet extends HttpServlet
                     <div class="container collapse collapsed-forms">
                       <div class="row">
                         <div class="col">
-                          <form method="POST" onsubmit="return false;">
+                          <form method="POST">
                             <input type="hidden" class="form-control" name="galleryId" id="galleryId" value="%s">
                             <div class="mb-3">
                               <label for="galleryName" class="form-label">Gallery name</label>
