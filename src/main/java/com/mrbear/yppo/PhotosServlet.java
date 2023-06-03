@@ -33,6 +33,42 @@ public class PhotosServlet extends HttpServlet
     @Inject
     private GalleryService galleryService;
 
+    private String createPhoto(GalleryPhotograph galleryPhotograph)
+    {
+        Photograph photograph = galleryPhotograph.getPhotograph();
+        String description = "";
+        if (galleryPhotograph.getDescription() != null && !galleryPhotograph.getDescription().isBlank())
+        {
+            description = String.format("<p>%s</p>", galleryPhotograph.getDescription());
+        }
+        return String.format("""
+                        <div class="col">
+                          <a href="/yourpersonalphotographorganiser/images?id=%s" data-fancybox data-caption="%s">                                              
+                            <img src="/yourpersonalphotographorganiser/images?id=%s&size=medium" alt="%s" loading="lazy"/>
+                          </a>
+                          <p>%s</p>
+                          %s                  
+                                <div class="collapse collapsed-forms">
+                                    <form method="POST">
+                                      <input type="hidden" class="form-control" name="galleryPhotographId" id="galleryPhotographId" value="%s">
+                                      <div class="mb-3">
+                                        <label for="galleryPhotographName" class="form-label">Name</label>
+                                        <input type="text" class="form-control" name="galleryPhotographName" id="galleryPhotographName" value="%s">
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="galleryPhotographDescription" class="form-label">Description</label>
+                                        <textarea class="form-control" name="galleryPhotographDescription" id="galleryPhotographDescription" rows="6">%s</textarea>
+                                      </div>
+                                      <div>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                      </div>
+                                    </form>
+                                  </div>
+                        </div>
+                        """, photograph.getId(), galleryPhotograph.getName(), photograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), description,
+                galleryPhotograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getDescription());
+    }
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
     {
@@ -129,43 +165,15 @@ public class PhotosServlet extends HttpServlet
                     <script src="../js/jquery-3.7.0.min.js"></script>
                     <script src="../js/bootstrap.bundle.js"></script>
                     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+                    <script>
+                    Fancybox.bind("[data-fancybox]", {
+                      // Your custom options
+                      groupAll: true,
+                    });
+                    </script>
                   </body>
                 </html>
-                """, gallery.getName(), gallery.getDescription(), gallery.getId(), gallery.getName(), gallery.getDescription(), description.toString()));
-    }
-
-    private String createPhoto(GalleryPhotograph galleryPhotograph)
-    {
-        Photograph photograph = galleryPhotograph.getPhotograph();
-        String description = "";
-        if (galleryPhotograph.getDescription() != null && !galleryPhotograph.getDescription().isBlank())
-        {
-            description = String.format("<p>%s</p>", galleryPhotograph.getDescription());
-        }
-        return String.format("""
-                        <div class="col">
-                          <img src="/yourpersonalphotographorganiser/images?id=%s&size=medium" alt="%s" loading="lazy"/>
-                          <p>%s</p>
-                          %s                  
-                                <div class="collapse collapsed-forms">
-                                    <form method="POST">
-                                      <input type="hidden" class="form-control" name="galleryPhotographId" id="galleryPhotographId" value="%s">
-                                      <div class="mb-3">
-                                        <label for="galleryPhotographName" class="form-label">Name</label>
-                                        <input type="text" class="form-control" name="galleryPhotographName" id="galleryPhotographName" value="%s">
-                                      </div>
-                                      <div class="mb-3">
-                                        <label for="galleryPhotographDescription" class="form-label">Description</label>
-                                        <textarea class="form-control" name="galleryPhotographDescription" id="galleryPhotographDescription" rows="6">%s</textarea>
-                                      </div>
-                                      <div>
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                      </div>
-                                    </form>
-                                  </div>
-                        </div>
-                        """, photograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), description,
-                galleryPhotograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getDescription());
+                """, gallery.getName(), gallery.getDescription(), gallery.getId(), gallery.getName(), gallery.getDescription(), description));
     }
 
     @Transactional
