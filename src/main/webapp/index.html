@@ -14,7 +14,21 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <h1><a href="galleries">Galleries</a></h1>
+            <p><a href="galleries" class="btn btn-primary btn-sm">To the galleries</a></>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <a href="/yourpersonalphotographorganiser/resources/jobs" class="btn btn-primary btn-sm" aria-describedby="jobsHelp">Jobs</a>
+            <div id="jobsHelp" class="form-text">This shows jobs that have run or are running.</div>
+            <a href="/yourpersonalphotographorganiser/resources/jobs/AddPhotographs/start" class="btn btn-primary btn-sm" aria-describedby="addPhotographsHelp">Add photographs</a>
+            <div id="addPhotographsHelp" class="form-text">Adds photographs found on the filesystem, that do not exist in the database yet.</div>
+            <a href="/yourpersonalphotographorganiser/resources/jobs/VerifyPhotographs/start" class="btn btn-primary btn-sm" aria-describedby="verifyPhotographsHelp">Verify photographs</a>
+            <div id="verifyPhotographsHelp" class="form-text">Verify checksums of all photographs, might take a long time to run.</div>
+            <a href="/yourpersonalphotographorganiser/resources/jobs/DeletePhotographs/start" class="btn btn-primary btn-sm" aria-describedby="deletePhotographsHelp">Delete photographs</a>
+            <div id="deletePhotographsHelp" class="form-text">Removes photographs from the database, that no longer exist on the filesystem.</div>
         </div>
     </div>
 </div>

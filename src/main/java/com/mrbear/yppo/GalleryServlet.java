@@ -83,6 +83,7 @@ public class GalleryServlet extends HttpServlet
                       <div class="row">
                         <div class="col">
                         <h1>Galleries</h1>
+                        <a href="/yourpersonalphotographorganiser" class="btn btn-primary btn-sm">Back to main</a>
                           <ul class="list-group">
                             %s
                           </ul>

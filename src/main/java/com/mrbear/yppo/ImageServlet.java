@@ -109,7 +109,7 @@ public class ImageServlet extends HttpServlet
         try {
             angle = photoService.getAngle(id).orElseGet(() ->
             {
-                LOGGER.severe(String.format("Angle not found for file %s!", file.getAbsolutePath()));
+                LOGGER.fine(String.format("Angle not found for file %s!", file.getAbsolutePath()));
                 return null;
             });
         } catch (ImageProcessingException ex) {
