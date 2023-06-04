@@ -43,7 +43,7 @@ public class PhotosServlet extends HttpServlet
         }
         return String.format("""
                         <div class="col">
-                          <a href="/yourpersonalphotographorganiser/images?id=%s" data-fancybox data-caption="%s">                                              
+                          <a href="/yourpersonalphotographorganiser/images?id=%s&extension=%s" data-fancybox data-caption="%s">                                              
                             <img src="/yourpersonalphotographorganiser/images?id=%s&size=medium" alt="%s" loading="lazy"/>
                           </a>
                           <p>%s</p>
@@ -65,7 +65,7 @@ public class PhotosServlet extends HttpServlet
                                     </form>
                                   </div>
                         </div>
-                        """, photograph.getId(), galleryPhotograph.getName(), photograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), description,
+                        """, photograph.getId(), photograph.getFilename(), galleryPhotograph.getName(), photograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), description,
                 galleryPhotograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getDescription());
     }
 

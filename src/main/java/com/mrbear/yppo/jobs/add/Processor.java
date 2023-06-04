@@ -50,6 +50,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -60,7 +61,7 @@ import java.util.logging.Logger;
 public class Processor implements ItemProcessor
 {
 
-    private static final Logger logger = Logger.getLogger(Processor.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Processor.class.getName());
 
     @Inject
     private LogService logService;
@@ -77,13 +78,13 @@ public class Processor implements ItemProcessor
         // TODO : Mrbear: make it a "proper" job parameter.
         String locationIdString = (String) jobParameters.get("location");
         Long locationId = locationIdString == null ? 1L : Long.parseLong(locationIdString);
-        logger.log(Level.FINEST, "location id={0}", locationId);
+        LOGGER.log(Level.FINEST, "location id={0}", locationId);
         Optional<Location> location = Optional.ofNullable(entityManager.find(Location.class, locationId));
         if (location.isEmpty())
         {
             throw new RuntimeException("Location with id " + locationId + " not found.");
         }
-        logger.log(Level.FINEST, "location={0}", location.get().getFilepath());
+        LOGGER.log(Level.FINEST, "location={0}", location.get().getFilepath());
         return location.get();
     }
 
@@ -91,7 +92,7 @@ public class Processor implements ItemProcessor
     @Override
     public Object processItem(Object item) throws Exception
     {
-        logger.entering(this.getClass().getName(), "addPhotographProcessor processItem " + item);
+        LOGGER.entering(this.getClass().getName(), "addPhotographProcessor processItem " + item);
         // return null; > do not process item
         if (item == null)
         {
@@ -129,16 +130,19 @@ public class Processor implements ItemProcessor
      */
     private Photograph processPhoto(Location location, Path path) throws NoSuchAlgorithmException, IOException, ImageProcessingException, MetadataException
     {
-        logger.entering(this.getClass().getName(), "processPhoto");
+        LOGGER.entering(this.getClass().getName(), "processPhoto");
         if (path == null)
         {
             throw new NullPointerException();
         }
-        logger.log(Level.FINE, "processPhoto {0} {1}", new Object[]
+        LOGGER.log(Level.FINE, "processPhoto {0} {1}", new Object[]
                 {
                         location.getFilepath(), path.toString()
                 });
         Path filename = path.getFileName();
+        if (filename.toString().endsWith(".mp4")) {
+            LOGGER.severe(filename.toString());
+        }
         Path locationPath = FileSystems.getDefault().getPath(location.getFilepath());
         Path relativePath = locationPath.relativize(path).getParent();
 
@@ -150,7 +154,7 @@ public class Processor implements ItemProcessor
         List<Photograph> listByFilename = query.getResultList();
         if (listByFilename != null && !listByFilename.isEmpty())
         {
-            logger.log(Level.FINE, "{0} already exists.", path.toString());
+            LOGGER.log(Level.FINE, "{0} already exists.", path.toString());
             log("Photograph " + path + " already exists.", null, LogLevel.INFO);
             return null;
         }
@@ -167,13 +171,13 @@ public class Processor implements ItemProcessor
         {
             Photograph alreadyPhoto = (Photograph) listByStats.get(0);
             String result = "File with filename " + relativePath.toString() + ":" + filename.toString() + " with hash " + computeHash + " already exists with id " + alreadyPhoto.getId() + ".";
-            logger.warning(result);
+            LOGGER.warning(result);
             log(result, null, LogLevel.WARNING);
             File alreadyPhotoFile = new File(alreadyPhoto.getFullPath());
             if (!alreadyPhotoFile.exists())
             {
                 String errormessage = "Photograph with id " + alreadyPhoto.getId() + " with path " + alreadyPhoto.getFullPath() + " has moved to " + path + ".";
-                logger.warning(errormessage);
+                LOGGER.warning(errormessage);
                 log(errormessage, null, LogLevel.WARNING);
                 alreadyPhoto.setFilename(filename.toString());
                 alreadyPhoto.setRelativepath(relativePath.toString());
@@ -201,9 +205,9 @@ public class Processor implements ItemProcessor
         if (taken != null && taken.isBefore(Instant.EPOCH))
         {
             photo.setTaken(null);
-            if (logger.isLoggable(Level.FINE))
+            if (LOGGER.isLoggable(Level.FINE))
             {
-                logger.log(Level.FINE, "processPhoto cannot determine date/time! {0} {1} {2} {3}", new Object[]
+                LOGGER.log(Level.FINE, "processPhoto cannot determine date/time! {0} {1} {2} {3}", new Object[]
                         {
                                 photo.getFilename(), photo.getFilesize(), photo.getHashstring(), taken
                         });
@@ -212,9 +216,9 @@ public class Processor implements ItemProcessor
 
         } else
         {
-            if (logger.isLoggable(Level.FINE))
+            if (LOGGER.isLoggable(Level.FINE))
             {
-                logger.log(Level.FINE, "processPhoto {0} {1} {2} {3}", new Object[]
+                LOGGER.log(Level.FINE, "processPhoto {0} {1} {2} {3}", new Object[]
                         {
                                 photo.getFilename(), photo.getFilesize(), photo.getHashstring(), photo.getTaken()
                         });

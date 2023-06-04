@@ -51,6 +51,12 @@ public class ImageServlet extends HttpServlet
 {
 
     private static final Logger LOGGER = Logger.getLogger(ImageServlet.class.getName());
+    public static final String JPEG_CONTENTTYPE = "image/jpeg";
+    public static final String GIF_CONTENTTYPE = "image/gif";
+    public static final String PNG_CONTENTTYPE = "image/png";
+    public static final String AVI_CONTENTTYPE = "video/x-msvideo";
+    public static final String MP4_CONTENTTYPE = "video/mp4";
+    public static final String DEFAULT_CONTENTTYPE = "text/html;charset=UTF-8";
 
     @Inject
     private PhotoService photoService;
@@ -60,7 +66,7 @@ public class ImageServlet extends HttpServlet
 
         try (PrintWriter out
                      = response.getWriter();) {
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType(DEFAULT_CONTENTTYPE);
             out.println("<html>");
             out.println("<head>");
             out.println("<title>Servlet ImageServlet</title>");
@@ -117,32 +123,49 @@ public class ImageServlet extends HttpServlet
         }
 
         String filename = file.getName();
-        String contentType = "text/html;charset=UTF-8";
+        String contentType = DEFAULT_CONTENTTYPE;
         if (filename.toLowerCase().endsWith(".jpg")) {
-            contentType = "image/jpeg";
+            contentType = JPEG_CONTENTTYPE;
         }
         if (filename.toLowerCase().endsWith(".jpeg")) {
-            contentType = "image/jpeg";
+            contentType = JPEG_CONTENTTYPE;
         }
         if (filename.toLowerCase().endsWith(".gif")) {
-            contentType = "image/gif";
+            contentType = GIF_CONTENTTYPE;
         }
         if (filename.toLowerCase().endsWith(".png")) {
-            contentType = "image/png";
+            contentType = PNG_CONTENTTYPE;
         }
         if (filename.toLowerCase().endsWith(".avi")) {
             if (request.getParameter("size") != null) {
-                contentType = "image/png";
+                contentType = PNG_CONTENTTYPE;
                 response.setContentType(contentType);
                 FileOperations.dumpFile(getServletContext().getResourceAsStream("/images/movie.png"), response.getOutputStream());
             } else {
-                contentType = "video/avi";
+                contentType = AVI_CONTENTTYPE;
                 response.setContentType(contentType);
                 // JDK7 : try-with-resources
                 try (FileInputStream inputStream = new FileInputStream(file)) {
                     FileOperations.dumpFile(inputStream, response.getOutputStream());
                 } catch (IOException e) {
                     LOGGER.throwing(ImageServlet.class.getName(), "Avi file.", e);
+                }
+            }
+            return;
+        }
+        if (filename.toLowerCase().endsWith(".mp4")) {
+            if (request.getParameter("size") != null) {
+                contentType = PNG_CONTENTTYPE;
+                response.setContentType(contentType);
+                FileOperations.dumpFile(getServletContext().getResourceAsStream("/images/movie.png"), response.getOutputStream());
+            } else {
+                contentType = MP4_CONTENTTYPE;
+                response.setContentType(contentType);
+                // JDK7 : try-with-resources
+                try (FileInputStream inputStream = new FileInputStream(file)) {
+                    FileOperations.dumpFile(inputStream, response.getOutputStream());
+                } catch (IOException e) {
+                    LOGGER.throwing(ImageServlet.class.getName(), "Mp4 file.", e);
                 }
             }
             return;

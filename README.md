@@ -74,4 +74,4 @@ http://icons-search.com/icons/movie.aspx
 http://www.designdownloader.com/i/?id=pen_5-20110811153719-00003
 
 Fancybox javascript library at:
-http://fancybox.net/support
+https://fancyapps.com/fancybox/plugins/html/#videos
