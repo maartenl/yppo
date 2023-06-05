@@ -5,6 +5,9 @@ import com.drew.metadata.MetadataException;
 import com.mrbear.yppo.entities.GalleryPhotograph;
 import com.mrbear.yppo.entities.Photograph;
 import com.mrbear.yppo.enums.ImageAngle;
+import com.mrbear.yppo.images.GenericMetadata;
+import com.mrbear.yppo.images.ImageOperations;
+import com.mrbear.yppo.images.PhotoMetadata;
 import com.mrbear.yppo.services.GalleryService;
 import com.mrbear.yppo.services.PhotoService;
 import jakarta.inject.Inject;
@@ -14,9 +17,12 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.WebApplicationException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -114,6 +120,7 @@ public class PhotoServlet extends HttpServlet
             new Property("Filesize", photograph.getFilesize()),
             new Property("Full path", photograph.getFullPath()),
             new Property("Relative path", photograph.getRelativepath()),
+            new Property("Taken", photograph.getTaken()),
             new Property("Hashstring", photograph.getHashstring()),
             new Property("Angle", angle)
     ).map(property ->
@@ -137,6 +144,7 @@ public class PhotoServlet extends HttpServlet
                       """
               , property.name(), property.value());
     }).collect(Collectors.joining());
+
     out.println(String.format("""
             <div class="container">
               <div class="row">
@@ -156,6 +164,39 @@ public class PhotoServlet extends HttpServlet
               </div>
             </div>
               """, tableContents));
+
+    File file = photoService.getFile(photograph.getId()).orElseThrow(() -> new WebApplicationException("File with id " + photograph.getId() + " not found!"));
+    try
+    {
+      List<GenericMetadata> metadata = ImageOperations.getAllMetadata(file);
+      String contents = metadata.stream().map(GenericMetadata::toHtml).collect(Collectors.joining());
+      out.println(String.format("""
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th scope="col">Tagname</th>
+                        <th scope="col">Tagtype</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Directory name</th>
+                        <th scope="col">Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    %s
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+              """, contents));
+
+    } catch (ImageProcessingException e)
+    {
+    }
+
     out.println(HtmlUtils.getFooter());
   }
 

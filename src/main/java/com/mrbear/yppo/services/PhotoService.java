@@ -45,6 +45,11 @@ public class PhotoService
         return Optional.ofNullable(entityManager.find(GalleryPhotograph.class, id));
     }
 
+    /**
+     *
+     * @param id id of a photograph
+     * @return a file, if found.
+     */
     public Optional<File> getFile(Long id)
     {
         Optional<Photograph> photoOpt = getPhotograph(id);

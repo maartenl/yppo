@@ -196,6 +196,18 @@ public class ImageOperations {
     return metadatas;
   }
 
+  public static List<GenericMetadata> getAllMetadata(File jpegFile) throws ImageProcessingException, IOException {
+    List<GenericMetadata> list = new ArrayList<>();
+    Metadata metadata = ImageMetadataReader.readMetadata(jpegFile);
+    for (Directory directory : metadata.getDirectories()) {
+      for (Tag tag : directory.getTags()) {
+        Object value = directory.getObject(tag.getTagType());
+        list.add(new GenericMetadata(tag.getTagName(), tag.getTagType(), tag.getDescription(), tag.getDirectoryName(), value));
+      }
+    }
+    return list;
+  }
+
   /**
    * Returns the date and time when the photograph was taken, null if unable to retrieve.
    *
