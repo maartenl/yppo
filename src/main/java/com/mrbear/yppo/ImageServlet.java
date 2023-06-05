@@ -18,7 +18,6 @@ package com.mrbear.yppo;
 
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.MetadataException;
-import com.mrbear.yppo.entities.Photograph;
 import com.mrbear.yppo.enums.ImageAngle;
 import com.mrbear.yppo.services.PhotoService;
 import jakarta.inject.Inject;
@@ -67,14 +66,9 @@ public class ImageServlet extends HttpServlet
         try (PrintWriter out
                      = response.getWriter();) {
             response.setContentType(DEFAULT_CONTENTTYPE);
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ImageServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
+            out.println(HtmlUtils.getHeader());
             out.println("<h1>" + error + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+            out.println(HtmlUtils.getFooter());
         }
     }
 

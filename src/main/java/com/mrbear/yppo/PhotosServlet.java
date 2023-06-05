@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -41,12 +42,15 @@ public class PhotosServlet extends HttpServlet
         {
             description = String.format("<p>%s</p>", galleryPhotograph.getDescription());
         }
-        return String.format("""
-                        <div class="col">
+            return String.format("""
+                    <div class="col">
                           <a href="/yourpersonalphotographorganiser/images?id=%s&extension=%s" data-fancybox data-caption="%s">                                              
                             <img src="/yourpersonalphotographorganiser/images?id=%s&size=medium" alt="%s" loading="lazy"/>
                           </a>
-                          <p>%s</p>
+                          <p>
+                            %s
+                            <a href="/yourpersonalphotographorganiser/photos/%s" class="btn btn-sm btn-outline-primary">View</a>
+                          </p>
                           %s                  
                                 <div class="collapse collapsed-forms">
                                     <form method="POST">
@@ -65,7 +69,7 @@ public class PhotosServlet extends HttpServlet
                                     </form>
                                   </div>
                         </div>
-                        """, photograph.getId(), photograph.getFilename(), galleryPhotograph.getName(), photograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), description,
+                        """, photograph.getId(), photograph.getFilename(), galleryPhotograph.getName(), photograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), galleryPhotograph.getId(), description,
                 galleryPhotograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getDescription());
     }
 
@@ -112,20 +116,8 @@ public class PhotosServlet extends HttpServlet
 
         // Writing the message on the web page
         PrintWriter out = resp.getWriter();
+        out.println(HtmlUtils.getHeader());
         out.println(String.format("""
-                <!doctype html>
-                <html lang="en">
-                  <head>
-                    <meta charset="utf-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1">
-                    <title>Your Personal Photograph Organiser</title>
-                    <link href="../css/bootstrap.css" rel="stylesheet">
-                    <link
-                            rel="stylesheet"
-                            href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"
-                    />
-                  </head>
-                  <body>
                     <div class="container">
                       <div class="row">
                         <div class="col">
@@ -162,18 +154,8 @@ public class PhotosServlet extends HttpServlet
                       </div>
                     </div>
                     %s
-                    <script src="../js/jquery-3.7.0.min.js"></script>
-                    <script src="../js/bootstrap.bundle.js"></script>
-                    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
-                    <script>
-                    Fancybox.bind("[data-fancybox]", {
-                      // Your custom options
-                      groupAll: true,
-                    });
-                    </script>
-                  </body>
-                </html>
                 """, gallery.getName(), gallery.getDescription(), gallery.getId(), gallery.getName(), gallery.getDescription(), description));
+        out.println(HtmlUtils.getFooter());
     }
 
     @Transactional
@@ -203,20 +185,8 @@ public class PhotosServlet extends HttpServlet
 
         // Writing the message on the web page
         PrintWriter out = resp.getWriter();
+        out.println(HtmlUtils.getHeader());
         out.println(String.format("""
-                <!doctype html>
-                <html lang="en">
-                  <head>
-                    <meta charset="utf-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1">
-                    <title>Your Personal Photograph Organiser</title>
-                    <link href="../css/bootstrap.css" rel="stylesheet">
-                    <link
-                            rel="stylesheet"
-                            href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"
-                    />
-                  </head>
-                  <body>
                     <div class="container">
                       <div class="row">
                         <div class="col">
@@ -226,5 +196,6 @@ public class PhotosServlet extends HttpServlet
                         </div>
                       </div>
                     </div>""", id));
+        out.println(HtmlUtils.getFooter());
     }
 }

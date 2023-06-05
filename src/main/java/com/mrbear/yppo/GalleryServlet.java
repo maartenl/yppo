@@ -65,20 +65,8 @@ public class GalleryServlet extends HttpServlet
                 .sorted(Comparator.comparingInt(Gallery::getSortorder).thenComparing(Gallery::getCreationDate))
                 .map(x -> createTree(x, galleries))
                 .collect(Collectors.joining());
+        out.println(HtmlUtils.getHeader());
         out.println(String.format("""
-                <!doctype html>
-                <html lang="en">
-                  <head>
-                    <meta charset="utf-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1">
-                    <title>Your Personal Photograph Organiser</title>
-                    <link href="css/bootstrap.css" rel="stylesheet">
-                    <link
-                            rel="stylesheet"
-                            href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"
-                    />
-                  </head>
-                  <body>
                     <div class="container">
                       <div class="row">
                         <div class="col">
@@ -90,12 +78,8 @@ public class GalleryServlet extends HttpServlet
                           </div>
                         </div>
                       </div>
-                    <script src="js/jquery-3.7.0.min.js"></script>
-                    <script src="js/bootstrap.bundle.js"></script>
-                    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
-                  </body>
-                </html>
                 """, description));
+        out.println(HtmlUtils.getFooter());
     }
 
     @Override
