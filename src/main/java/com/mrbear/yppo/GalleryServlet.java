@@ -29,26 +29,37 @@ public class GalleryServlet extends HttpServlet
                 .filter(x -> Objects.equals(x.getParentId(), gallery.getId()))
                 .sorted(Comparator.comparingInt(Gallery::getSortorder).thenComparing(Gallery::getCreationDate))
                 .toList();
+        String highlight = "/yourpersonalphotographorganiser/images/gallery.png";
+        if (gallery.getHighlight() != null) {
+            highlight = String.format("/yourpersonalphotographorganiser/images?id=%s&size=thumb", gallery.getHighlight());
+        }
         if (kids.isEmpty())
         {
             return String.format("""
                         <li class="list-group-item">
                             <div class="ms-2 me-auto">
-                                    <div class="fw-bold"><a href="galleries/%d">%s</a></div>
-                                    %s
-                                  </div>
+                              <div class="fw-bold">
+                                <img width="45px" height="45px" src="%s"><a href="galleries/%d">%s</a>
+                              </div>
+                              %s
+                            </div>  
                         </li>
-                    """, gallery.getId(), gallery.getName(), gallery.getDescription());
+                    """, highlight, gallery.getId(), gallery.getName(), gallery.getDescription());
         }
         String subTree = kids.stream()
                 .map(x -> createTree(x, allGalleries))
                 .collect(Collectors.joining());
         return String.format("""
-                        <li class="list-group-item"><div class="ms-2 me-auto">
-                                          <div class="fw-bold"><a href="galleries/%d">%s</a></div>
-                                          %s
-                                        </div><ul class="list-group">%s</ul></li>
-                        """, gallery.getId(), gallery.getName(), gallery.getDescription(),
+                        <li class="list-group-item">
+                          <div class="ms-2 me-auto">
+                            <div class="fw-bold">
+                              <img width="45px" height="45px" src="%s"><a href="galleries/%d">%s</a>
+                            </div>
+                            %s
+                            <ul class="list-group">%s</ul>
+                          </div>  
+                        </li>
+                        """, highlight, gallery.getId(), gallery.getName(), gallery.getDescription(),
                 subTree);
     }
 
@@ -70,14 +81,14 @@ public class GalleryServlet extends HttpServlet
                     <div class="container">
                       <div class="row">
                         <div class="col">
-                        <h1>Galleries</h1>
-                        <a href="/yourpersonalphotographorganiser" class="btn btn-primary btn-sm">Back to main</a>
+                          <h1>Galleries</h1>
+                          <a href="/yourpersonalphotographorganiser" class="btn btn-primary btn-sm">Back to main</a>
                           <ul class="list-group">
                             %s
                           </ul>
-                          </div>
                         </div>
                       </div>
+                    </div>
                 """, description));
         out.println(HtmlUtils.getFooter());
     }
