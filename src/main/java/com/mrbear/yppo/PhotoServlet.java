@@ -7,7 +7,6 @@ import com.mrbear.yppo.entities.Photograph;
 import com.mrbear.yppo.enums.ImageAngle;
 import com.mrbear.yppo.images.GenericMetadata;
 import com.mrbear.yppo.images.ImageOperations;
-import com.mrbear.yppo.images.PhotoMetadata;
 import com.mrbear.yppo.services.GalleryService;
 import com.mrbear.yppo.services.PhotoService;
 import jakarta.inject.Inject;
@@ -27,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -53,14 +53,34 @@ public class PhotoServlet extends HttpServlet
     // for example: /yourpersonalphotographorganiser/photos/1
     String[] requestURI = req.getRequestURI().split("/");
     Long id = Long.valueOf(requestURI[requestURI.length - 1]);
-    Optional<GalleryPhotograph> galleryOpt = photoService.getGalleryPhotograph(id);
-    if (galleryOpt.isEmpty())
+    Optional<GalleryPhotograph> galleryPhotographOptional = photoService.getGalleryPhotograph(id);
+    if (galleryPhotographOptional.isEmpty())
     {
       PrintWriter out = resp.getWriter();
       out.println("GalleryPhotograph not found.");
       return;
     }
-    GalleryPhotograph galleryPhotograph = galleryOpt.get();
+    GalleryPhotograph galleryPhotograph = galleryPhotographOptional.get();
+
+    List<GalleryPhotograph> galleryPhotographs = photoService.getGalleryPhotographs(galleryPhotograph.getGalleryId());
+    int index = IntStream.range(0, galleryPhotographs.size())
+            .filter(i -> Objects.equals(galleryPhotographs.get(i).getId(), galleryPhotograph.getId()))
+            .findFirst()
+            .orElse(-1);
+    if (index == -1)
+    {
+      LOGGER.severe("Index of galleryPhotograph " + galleryPhotograph.getId() + " not found in list.");
+    }
+    Optional<GalleryPhotograph> previous = Optional.empty();
+    Optional<GalleryPhotograph> next = Optional.empty();
+    if (index > 0)
+    {
+      previous = Optional.of(galleryPhotographs.get(index - 1));
+    }
+    if (index < galleryPhotographs.size() - 1 && index >= 0)
+    {
+      next = Optional.of(galleryPhotographs.get(index + 1));
+    }
 
     String description = "";
     if (galleryPhotograph.getDescription() != null && !galleryPhotograph.getDescription().isBlank())
@@ -89,15 +109,40 @@ public class PhotoServlet extends HttpServlet
     out.println(String.format("""               
                         <div class="container text-center">
                           <div class="row">
+                            <div class="col align-middle">
+                              %s
+                            </div>
                             <div class="col">
+                                <div class="collapse collapsed-forms">
+                                    <form method="POST">
+                                      <input type="hidden" class="form-control" name="galleryPhotographId" id="galleryPhotographId" value="%s">
+                                      <div class="mb-3">
+                                        <label for="galleryPhotographName" class="form-label">Name</label>
+                                        <input type="text" class="form-control" name="galleryPhotographName" id="galleryPhotographName" value="%s">
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="galleryPhotographDescription" class="form-label">Description</label>
+                                        <textarea class="form-control" name="galleryPhotographDescription" id="galleryPhotographDescription" rows="6">%s</textarea>
+                                      </div>
+                                      <div>
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                      </div>
+                                    </form>
+                                  </div>
                               <img src="/yourpersonalphotographorganiser/images?id=%s&size=large" alt="%s"/>
                               <p>%s</p>
                               %s                                                 
                             </div>
+                            <div class="col align-middle">
+                              %s
+                            </div>
                           </div>  
                         </div>                                   
-                    """,
-            galleryPhotograph.getPhotograph().getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), description));
+                    """, previous.map(photo -> "<a href=\"/yourpersonalphotographorganiser/photos/" + photo.getId() + "\" class=\"btn btn-primary btn-sm\"><i class=\"bi bi-arrow-left-square-fill\"></i></a>").orElse(""),
+            galleryPhotograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getDescription(),
+            galleryPhotograph.getPhotograph().getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), description
+            , next.map(photo -> "<a href=\"/yourpersonalphotographorganiser/photos/" + photo.getId() + "\" class=\"btn btn-primary btn-sm\"><i class=\"bi bi-arrow-right-square-fill\"></i></a>").orElse("")
+    ));
     Photograph photograph = galleryPhotograph.getPhotograph();
     ImageAngle angle = null;
     try
@@ -125,15 +170,17 @@ public class PhotoServlet extends HttpServlet
             new Property("Angle", angle)
     ).map(property ->
     {
-      if (Objects.equals(EMPTY, property.value())) {
-        if (Objects.equals(EMPTY, property.name())) {
+      if (Objects.equals(EMPTY, property.value()))
+      {
+        if (Objects.equals(EMPTY, property.name()))
+        {
           return "<tr><td colspan=\"2\">&nbsp;</td></tr>";
         }
         return String.format("""
-                      <tr>
-                        <td colspan="2">%s</td>
-                      </tr>
-                      """
+                        <tr>
+                          <td colspan="2">%s</td>
+                        </tr>
+                        """
                 , property.name());
       }
       return String.format("""
@@ -171,27 +218,27 @@ public class PhotoServlet extends HttpServlet
       List<GenericMetadata> metadata = ImageOperations.getAllMetadata(file);
       String contents = metadata.stream().map(GenericMetadata::toHtml).collect(Collectors.joining());
       out.println(String.format("""
-            <div class="container">
-              <div class="row">
-                <div class="col">
-                  <table class="table table-bordered">
-                    <thead>
-                      <tr>
-                        <th scope="col">Tagname</th>
-                        <th scope="col">Tagtype</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Directory name</th>
-                        <th scope="col">Value</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                    %s
-                    </tbody>
-                  </table>
+              <div class="container">
+                <div class="row">
+                  <div class="col">
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th scope="col">Tagname</th>
+                          <th scope="col">Tagtype</th>
+                          <th scope="col">Description</th>
+                          <th scope="col">Directory name</th>
+                          <th scope="col">Value</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      %s
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
-            </div>
-              """, contents));
+                """, contents));
 
     } catch (ImageProcessingException e)
     {
@@ -206,15 +253,6 @@ public class PhotoServlet extends HttpServlet
   {
     String[] requestURI = req.getRequestURI().split("/");
     Long id = Long.valueOf(requestURI[requestURI.length - 1]);
-
-    String galleryId = req.getParameter("galleryId");
-    String galleryName = req.getParameter("galleryName");
-    String galleryDescription = req.getParameter("galleryDescription");
-    if (galleryId != null && !galleryId.isBlank())
-    {
-      LOGGER.finest(String.format("doPost Gallery %s,%s,%s", galleryId, galleryName, galleryDescription));
-      galleryService.updateGallery(Long.valueOf(galleryId), galleryName, galleryDescription);
-    }
 
     String galleryPhotographId = req.getParameter("galleryPhotographId");
     String galleryPhotographName = req.getParameter("galleryPhotographName");
@@ -233,7 +271,7 @@ public class PhotoServlet extends HttpServlet
               <div class="row">
                 <div class="col">
                   <div class="alert alert-primary" role="alert">
-                    Data submitted. <a href="/yourpersonalphotographorganiser/galleries/%s" class="btn btn-primary btn-sm">Back to gallery</a>
+                    Data submitted. <a href="/yourpersonalphotographorganiser/photos/%s" class="btn btn-primary btn-sm">Back to photo</a>
                   </div>
                 </div>
               </div>

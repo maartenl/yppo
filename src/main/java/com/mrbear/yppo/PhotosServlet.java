@@ -52,22 +52,6 @@ public class PhotosServlet extends HttpServlet
                             <a href="/yourpersonalphotographorganiser/photos/%s" class="btn btn-sm btn-outline-primary">View</a>
                           </p>
                           %s                  
-                                <div class="collapse collapsed-forms">
-                                    <form method="POST">
-                                      <input type="hidden" class="form-control" name="galleryPhotographId" id="galleryPhotographId" value="%s">
-                                      <div class="mb-3">
-                                        <label for="galleryPhotographName" class="form-label">Name</label>
-                                        <input type="text" class="form-control" name="galleryPhotographName" id="galleryPhotographName" value="%s">
-                                      </div>
-                                      <div class="mb-3">
-                                        <label for="galleryPhotographDescription" class="form-label">Description</label>
-                                        <textarea class="form-control" name="galleryPhotographDescription" id="galleryPhotographDescription" rows="6">%s</textarea>
-                                      </div>
-                                      <div>
-                                        <button type="submit" class="btn btn-primary">Submit</button>
-                                      </div>
-                                    </form>
-                                  </div>
                         </div>
                         """, photograph.getId(), photograph.getFilename(), galleryPhotograph.getName(), photograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), galleryPhotograph.getId(), description,
                 galleryPhotograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getDescription());
@@ -172,15 +156,6 @@ public class PhotosServlet extends HttpServlet
         {
             LOGGER.finest(String.format("doPost Gallery %s,%s,%s", galleryId, galleryName, galleryDescription));
             galleryService.updateGallery(Long.valueOf(galleryId), galleryName, galleryDescription);
-        }
-
-        String galleryPhotographId = req.getParameter("galleryPhotographId");
-        String galleryPhotographName = req.getParameter("galleryPhotographName");
-        String galleryPhotographDescription = req.getParameter("galleryPhotographDescription");
-        if (galleryPhotographId != null && !galleryPhotographId.isBlank())
-        {
-            LOGGER.finest(String.format("doPost galleryPhotograph %s,%s,%s", galleryPhotographId, galleryPhotographName, galleryPhotographDescription));
-            photoService.updateGalleryPhotograph(Long.valueOf(galleryPhotographId), galleryPhotographName, galleryPhotographDescription);
         }
 
         // Writing the message on the web page
