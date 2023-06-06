@@ -3,6 +3,9 @@ package com.mrbear.yppo.entities;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -12,93 +15,109 @@ import java.util.Objects;
  */
 @Entity
 @Table(name = "Comment")
+@NamedQuery(name = "Comment.findByPhotograph", query = "SELECT c FROM Comment c where c.galleryphotographId = :galleryphotographid order by c.submitted desc")
 public class Comment
 {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    @Column(name = "id")
-    private long id;
-    @Basic
-    @Column(name = "galleryphotograph_id")
-    private long galleryphotographId;
-    @Basic
-    @Column(name = "author")
-    private String author;
-    @Basic
-    @Column(name = "submitted")
-    private Timestamp submitted;
-    @Basic
-    @Column(name = "comment")
-    private String comment;
+  private static final String PATTERN_FORMAT = "yyyy-MM-dd HH:mm:ss z";
 
-    public long getId()
-    {
-        return id;
-    }
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Id
+  @Column(name = "id")
+  private long id;
+  @Basic
+  @Column(name = "galleryphotograph_id")
+  private long galleryphotographId;
+  @Basic
+  @Column(name = "author")
+  private String author;
+  @Basic
+  @Column(name = "submitted")
+  private Timestamp submitted;
+  @Basic
+  @Column(name = "comment")
+  private String comment;
 
-    public void setId(long id)
-    {
-        this.id = id;
-    }
+  public long getId()
+  {
+    return id;
+  }
 
-    public long getGalleryphotographId()
-    {
-        return galleryphotographId;
-    }
+  public void setId(long id)
+  {
+    this.id = id;
+  }
 
-    public void setGalleryphotographId(long galleryphotographId)
-    {
-        this.galleryphotographId = galleryphotographId;
-    }
+  public long getGalleryphotographId()
+  {
+    return galleryphotographId;
+  }
 
-    public String getAuthor()
-    {
-        return author;
-    }
+  public void setGalleryphotographId(long galleryphotographId)
+  {
+    this.galleryphotographId = galleryphotographId;
+  }
 
-    public void setAuthor(String author)
-    {
-        this.author = author;
-    }
+  public String getAuthor()
+  {
+    return author;
+  }
 
-    public Timestamp getSubmitted()
-    {
-        return submitted;
-    }
+  public void setAuthor(String author)
+  {
+    this.author = author;
+  }
 
-    public void setSubmitted(Timestamp submitted)
-    {
-        this.submitted = submitted;
-    }
+  public Instant getSubmitted()
+  {
+    return submitted == null ? null : submitted.toInstant();
+  }
 
-    public String getComment()
-    {
-        return comment;
-    }
+  public void setSubmitted(Instant submitted)
+  {
+    this.submitted = submitted == null ? null : Timestamp.from(submitted);
+  }
 
-    public void setComment(String comment)
-    {
-        this.comment = comment;
-    }
+  public String getComment()
+  {
+    return comment;
+  }
 
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Comment comment1 = (Comment) o;
-        return id == comment1.id && galleryphotographId == comment1.galleryphotographId && Objects.equals(author,
-                comment1.author) && Objects.equals(submitted, comment1.submitted) && Objects.equals(comment,
-                comment1.comment);
-    }
+  public void setComment(String comment)
+  {
+    this.comment = comment;
+  }
 
-    @Override
-    public int hashCode()
+  @Override
+  public boolean equals(Object o)
+  {
+    if (this == o)
     {
-        return Objects.hash(id, galleryphotographId, author, submitted, comment);
+      return true;
     }
+    if (o == null || getClass() != o.getClass())
+    {
+      return false;
+    }
+    Comment comment1 = (Comment) o;
+    return id == comment1.id && galleryphotographId == comment1.galleryphotographId && Objects.equals(author,
+            comment1.author) && Objects.equals(submitted, comment1.submitted) && Objects.equals(comment,
+            comment1.comment);
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return Objects.hash(id, galleryphotographId, author, submitted, comment);
+  }
+
+  public String getSubmittedString()
+  {
+    if (getSubmitted() == null)
+    {
+      return null;
+    }
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_FORMAT)
+            .withZone(ZoneId.systemDefault());
+    return formatter.format(getSubmitted());
+  }
 }

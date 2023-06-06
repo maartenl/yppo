@@ -2,11 +2,13 @@ package com.mrbear.yppo;
 
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.MetadataException;
+import com.mrbear.yppo.entities.Comment;
 import com.mrbear.yppo.entities.GalleryPhotograph;
 import com.mrbear.yppo.entities.Photograph;
 import com.mrbear.yppo.enums.ImageAngle;
 import com.mrbear.yppo.images.GenericMetadata;
 import com.mrbear.yppo.images.ImageOperations;
+import com.mrbear.yppo.services.CommentService;
 import com.mrbear.yppo.services.GalleryService;
 import com.mrbear.yppo.services.PhotoService;
 import jakarta.inject.Inject;
@@ -43,6 +45,9 @@ public class PhotoServlet extends HttpServlet
 
   @Inject
   private GalleryService galleryService;
+
+  @Inject
+  private CommentService commentService;
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
@@ -143,6 +148,35 @@ public class PhotoServlet extends HttpServlet
             galleryPhotograph.getPhotograph().getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), description
             , next.map(photo -> "<a href=\"/yourpersonalphotographorganiser/photos/" + photo.getId() + "\" class=\"btn btn-primary btn-sm\"><i class=\"bi bi-arrow-right-square-fill\"></i></a>").orElse("")
     ));
+
+    List<Comment> comments = commentService.getComments(galleryPhotograph);
+
+    String commentsDescription = comments.stream().map(comment -> String.format("""
+                                <blockquote class="blockquote mb-0">
+                                    <p>%s</p>
+                                    <footer class="blockquote-footer">%s (%s)</footer>
+                                  </blockquote>
+            """, comment.getComment(), comment.getAuthor(), comment.getSubmittedString())).collect(Collectors.joining());
+//                              <p class="card-text"></p>
+  //                            <h6 class="card-subtitle mb-2 text-muted"></h6>
+
+    out.println(String.format("""
+            <div class="container">
+              <div class="row">
+                <div class="col text-center">
+                  <div class="card">
+                    <div class="card-header">
+                      Comments
+                    </div>
+                            <div class="card-body">
+                    %s
+                            </div>   
+                  </div>             
+                </div>
+              </div>
+            </div>
+              """, commentsDescription));
+
     Photograph photograph = galleryPhotograph.getPhotograph();
     ImageAngle angle = null;
     try
