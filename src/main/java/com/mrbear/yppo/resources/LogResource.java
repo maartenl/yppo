@@ -30,8 +30,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-@Transactional
-@Path("log")
+@Path("logs")
 public class LogResource
 {
 
@@ -42,6 +41,15 @@ public class LogResource
     @Produces(MediaType.APPLICATION_JSON)
     public List<LogRecord> list()
     {
-        return logService.getLog().stream().map(x -> new LogRecord(x.getId(), x.getMessage(), x.getDescription(), x.getCreationDate(), x.getLoglevel())).toList();
+        return logService.getLog().stream().map(x -> new LogRecord(x.getId(), x.getSource(), x.getMessage(), x.getDescription(), x.getCreationDate(), x.getLoglevel())).toList();
+    }
+
+    @GET
+    @Path("persisted")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<LogRecord> persist()
+    {
+        logService.persistLog();
+        return logService.getPersistedLogs().stream().map(x -> new LogRecord(x.getId(), x.getSource(), x.getMessage(), x.getDescription(), x.getCreationDate(), x.getLoglevel())).toList();
     }
 }

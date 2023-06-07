@@ -25,6 +25,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 /**
@@ -32,32 +33,45 @@ import java.util.logging.Logger;
  *
  * @author maartenl
  */
-@Transactional(Transactional.TxType.REQUIRES_NEW)
+@Transactional
 public class LogService
 {
 
-    private static final Logger LOGGER = Logger.getLogger(LogService.class.getName());
+  private static final List<Log> inMemoryList = new CopyOnWriteArrayList<>();
 
-    @PersistenceContext(unitName = "yppo")
-    private EntityManager entityManager;
+  private static final Logger LOGGER = Logger.getLogger(LogService.class.getName());
 
-    public void createLog(String source, String message, String description, LogLevel logLevel)
-    {
-        LOGGER.finest("createLog");
-        Log log = new Log(source, message, description, logLevel);
-        entityManager.persist(log);
-    }
+  @PersistenceContext(unitName = "yppo")
+  private EntityManager entityManager;
 
-    public int deleteAll()
-    {
-        LOGGER.finest("deleteAll");
-        Query query = entityManager.createNamedQuery("Log.deleteAll");
-        return query.executeUpdate();
-    }
+  public void createLog(String source, String message, String description, LogLevel logLevel)
+  {
+    LOGGER.finest("createLog");
+    inMemoryList.add(new Log(source, message, description, logLevel));
+  }
 
-    public List<Log> getLog()
-    {
-        TypedQuery<Log> query = entityManager.createNamedQuery("Log.findFirstHundred", Log.class).setMaxResults(100);
-        return query.getResultList();
-    }
+  public int deleteAll()
+  {
+    LOGGER.finest("deleteAll");
+    Query query = entityManager.createNamedQuery("Log.deleteAll");
+    return query.executeUpdate();
+  }
+
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
+  public void persistLog()
+  {
+    inMemoryList.forEach(log -> entityManager.persist(log));
+    inMemoryList.clear();
+  }
+
+  public List<Log> getLog()
+  {
+    return inMemoryList;
+  }
+
+  public List<Log> getPersistedLogs()
+  {
+    TypedQuery<Log> query = entityManager.createNamedQuery("Log.findFirstHundred", Log.class).setMaxResults(100);
+    return query.getResultList();
+  }
 }

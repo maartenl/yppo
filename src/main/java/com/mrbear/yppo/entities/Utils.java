@@ -1,5 +1,8 @@
 package com.mrbear.yppo.entities;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class Utils
 {
     private Utils()
@@ -14,5 +17,13 @@ public class Utils
             return null;
         }
         return value;
+    }
+
+    public static String getStacktrace(Throwable e)
+    {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        return e.toString();
     }
 }

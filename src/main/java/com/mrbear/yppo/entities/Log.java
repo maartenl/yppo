@@ -57,6 +57,7 @@ public class Log
         this.message = message;
         this.description = description;
         this.loglevel = logLevel;
+        this.creationDate = Timestamp.from(Instant.now());
     }
 
     public Instant getCreationDate()
