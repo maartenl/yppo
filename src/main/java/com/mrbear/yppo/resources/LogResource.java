@@ -50,6 +50,6 @@ public class LogResource
     public List<LogRecord> persist()
     {
         logService.persistLog();
-        return logService.getPersistedLogs().stream().map(x -> new LogRecord(x.getId(), x.getSource(), x.getMessage(), x.getDescription(), x.getCreationDate(), x.getLoglevel())).toList();
+        return list();
     }
 }

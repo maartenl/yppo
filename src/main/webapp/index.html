@@ -21,11 +21,13 @@
 <div class="container">
     <div class="row">
         <div class="col">
-            <a href="/yourpersonalphotographorganiser/resources/logs" class="btn btn-primary btn-sm" aria-describedby="logsHelp">Logs</a>
+            <a href="/yourpersonalphotographorganiser/logs" class="btn btn-primary btn-sm" aria-describedby="logsHelp">Show logs</a>
             <div id="logsHelp" class="form-text">This shows current log entries since startup.</div>
+            <a href="/yourpersonalphotographorganiser/logs?all=true" class="btn btn-primary btn-sm" aria-describedby="logsAllHelp">Show all logs</a>
+            <div id="logsAllHelp" class="form-text">This shows persisted log entries in the database.</div>
             <a href="/yourpersonalphotographorganiser/resources/logs/persisted" class="btn btn-primary btn-sm" aria-describedby="persistedLogsHelp">Persist logs</a>
             <div id="persistedLogsHelp" class="form-text">This shows persisted log entries in the database (also persists transient logs).</div>
-            <a href="/yourpersonalphotographorganiser/resources/jobs" class="btn btn-primary btn-sm" aria-describedby="jobsHelp">Jobs</a>
+            <a href="/yourpersonalphotographorganiser/resources/jobs" class="btn btn-primary btn-sm" aria-describedby="jobsHelp">Show jobs</a>
             <div id="jobsHelp" class="form-text">This shows jobs that have run or are running.</div>
             <a href="/yourpersonalphotographorganiser/resources/jobs/AddPhotographs/start" class="btn btn-primary btn-sm" aria-describedby="addPhotographsHelp">Add photographs</a>
             <div id="addPhotographsHelp" class="form-text">Adds photographs found on the filesystem, that do not exist in the database yet.</div>
