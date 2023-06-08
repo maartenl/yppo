@@ -155,7 +155,6 @@ public class Processor implements ItemProcessor
         if (listByFilename != null && !listByFilename.isEmpty())
         {
             LOGGER.log(Level.FINE, "{0} already exists.", path.toString());
-            log("Photograph " + path + " already exists.", null, LogLevel.INFO);
             return null;
         }
         // check if hash and filesize already exist in database
