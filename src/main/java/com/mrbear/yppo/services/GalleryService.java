@@ -1,6 +1,8 @@
 package com.mrbear.yppo.services;
 
 import com.mrbear.yppo.entities.Gallery;
+import com.mrbear.yppo.entities.LogLevel;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -18,6 +20,9 @@ public class GalleryService
     @PersistenceContext(unitName = "yppo")
     private EntityManager entityManager;
 
+    @Inject
+    private LogService logService;
+
     public List<Gallery> getGalleries()
     {
         TypedQuery<Gallery> query = entityManager.createNamedQuery("Gallery.findAll", Gallery.class);
@@ -31,7 +36,9 @@ public class GalleryService
 
     public void updateGallery(Long galleryId, String galleryName, String galleryDescription)
     {
-        LOGGER.finest(String.format("Changing data on gallery %s", galleryId));
+        String logmessage = String.format("Changing data on gallery %s to (%s,%s)", galleryId, galleryName, galleryDescription);
+        LOGGER.finest(logmessage);
+        logService.createLog("GalleryService", logmessage, null, LogLevel.INFO);
         getGallery(galleryId).ifPresent(gallery ->
         {
             gallery.setName(galleryName);

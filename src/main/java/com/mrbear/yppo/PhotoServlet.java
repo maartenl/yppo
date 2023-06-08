@@ -129,6 +129,19 @@ public class PhotoServlet extends HttpServlet
                                         <label for="galleryPhotographDescription" class="form-label">Description</label>
                                         <textarea class="form-control" name="galleryPhotographDescription" id="galleryPhotographDescription" rows="6">%s</textarea>
                                       </div>
+                                      <div class="mb-3">
+                                        <label for="galleryPhotographAngle">Angle select</label>
+                                        <select class="form-control" name="galleryPhotographAngle" id="galleryPhotographAngle">
+                                          <option value="1">Normal</option>
+                                          <option value="2">Top/Rightside</option>
+                                          <option value="3">Upside/Down</option>
+                                          <option value="4">Bottom/Leftside</option>
+                                          <option value="5">Leftside/Top</option>
+                                          <option value="6">Ninetydegree/Clockwise</option>
+                                          <option value="7">Rightside/Bottom</option>
+                                          <option value="8">Ninetydegree/CounterClockwise</option>
+                                        </select>
+                                      </div>
                                       <div>
                                         <button type="submit" class="btn btn-primary">Submit</button>
                                       </div>
@@ -201,7 +214,8 @@ public class PhotoServlet extends HttpServlet
             new Property("Relative path", photograph.getRelativepath()),
             new Property("Taken", photograph.getTaken()),
             new Property("Hashstring", photograph.getHashstring()),
-            new Property("Angle", angle)
+            new Property("Angle", angle),
+            new Property("Angle integer", angle == null ? null : angle.getAngle())
     ).map(property ->
     {
       if (Objects.equals(EMPTY, property.value()))
@@ -291,10 +305,12 @@ public class PhotoServlet extends HttpServlet
     String galleryPhotographId = req.getParameter("galleryPhotographId");
     String galleryPhotographName = req.getParameter("galleryPhotographName");
     String galleryPhotographDescription = req.getParameter("galleryPhotographDescription");
+    ImageAngle galleryPhotographAngle = req.getParameter("galleryPhotographAngle") == null ? null :
+            ImageAngle.getAngle(Integer.valueOf(req.getParameter("galleryPhotographAngle"))).orElse(null);
     if (galleryPhotographId != null && !galleryPhotographId.isBlank())
     {
       LOGGER.finest(String.format("doPost galleryPhotograph %s,%s,%s", galleryPhotographId, galleryPhotographName, galleryPhotographDescription));
-      photoService.updateGalleryPhotograph(Long.valueOf(galleryPhotographId), galleryPhotographName, galleryPhotographDescription);
+      photoService.updateGalleryPhotograph(Long.valueOf(galleryPhotographId), galleryPhotographName, galleryPhotographDescription, galleryPhotographAngle);
     }
 
     // Writing the message on the web page
