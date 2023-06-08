@@ -44,6 +44,25 @@ For example: /home/maartenl/gallery3/var/albums
 the same gallery, but these will refer to the SAME photograph. Every photograph
 is unique.
 
+# Adding photos to a Gallery
+
+First of all, you can verify if there are any photographs that are not yet allocated to a gallery:
+
+select * 
+from Photograph 
+where not exists (select 1 from GalleryPhotograph where photograph_id = Photograph.id);
+
+Creating a Gallery is no more than:
+
+insert into Gallery (name, parent_id, sortorder) values('Vacation 2008', 2, 0);
+
+Then you can simply add those photographs to a gallery of your choice, for instance:
+
+insert into GalleryPhotograph (gallery_id, photograph_id, name, description, sortorder)
+select 48, id, filename, null, 0 from Photograph where relativepath like '%vacation%'
+and not exists (select 1 from GalleryPhotograph where photograph_id=Photograph.id);
+
+
 # Technology stack
 
 It's a deployable .war file for application servers.
