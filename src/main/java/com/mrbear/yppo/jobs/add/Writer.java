@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 public class Writer extends AbstractItemWriter
 {
 
-    private static final Logger logger = Logger.getLogger(Writer.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Writer.class.getName());
 
     @PersistenceContext(unitName = "yppo")
     private EntityManager entityManager;
@@ -52,32 +52,32 @@ public class Writer extends AbstractItemWriter
     {
         if (checkpoint == null)
         {
-            logger.finest("addPhotographWriter open start");
+            LOGGER.finest("addPhotographWriter open start");
         } else
         {
-            logger.finest("addPhotographWriter open restart");
+            LOGGER.finest("addPhotographWriter open restart");
         }
     }
 
     @Override
     public void close() throws Exception
     {
-        logger.finest("addPhotographWriter close");
+        LOGGER.finest("addPhotographWriter close");
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     @Override
     public void writeItems(List<Object> items) throws Exception
     {
-        logger.entering(this.getClass().getName(), "writeItems " + items);
+        LOGGER.entering(this.getClass().getName(), "writeItems " + items);
         for (Object i : items)
         {
-            logger.log(Level.FINEST, "addPhotographWriter writeItem {0}", i);
+            LOGGER.log(Level.FINEST, "addPhotographWriter writeItem {0}", i);
             Photograph photograph = (Photograph) i;
             entityManager.persist(photograph);
             logService.createLog("verifyPhotograph", "Photograph from file " + photograph.getFullPath() + " created.", null, LogLevel.INFO);
         }
-        logger.exiting(this.getClass().getName(), "writeItems");
+        LOGGER.exiting(this.getClass().getName(), "writeItems");
     }
 
 }

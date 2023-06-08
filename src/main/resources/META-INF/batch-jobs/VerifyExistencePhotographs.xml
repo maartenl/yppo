@@ -18,7 +18,7 @@
 -->
 <job id="DeletePhotographs" xmlns="https://jakarta.ee/xml/ns/jakartaee" version="2.0" restartable="false">
     <properties>
-        <property name="dryrun" value="false"/>
+        <property name="dryrun" value="true"/>
     </properties>
     <listeners>
         <listener ref="deletePhotographListener"/>

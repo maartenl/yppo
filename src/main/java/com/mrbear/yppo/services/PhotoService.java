@@ -81,5 +81,18 @@ public class PhotoService
         });
     }
 
+    public List<Long> getAllPrimaryKeysOfPhotographs()
+    {
+        TypedQuery<Long> query = entityManager.createNamedQuery("Photograph.findAllPks",
+                Long.class);
+        return query.getResultList();
+    }
+
+    public List<GalleryPhotograph> getGalleryPhotographsUsed(Photograph photograph)
+    {
+        TypedQuery<GalleryPhotograph> query = entityManager.createNamedQuery("GalleryPhotograph.findByPhotograph",
+                GalleryPhotograph.class).setParameter("photograph", photograph);
+        return query.getResultList();
+    }
 }
 

@@ -74,15 +74,15 @@ public abstract class Listener implements JobListener, StepListener, ItemProcess
   @Override
   public void beforeProcess(Object item) throws Exception
   {
-    LOGGER.log(Level.INFO, "beforeProcess {0}", item);
-    logService.createLog(getName(), "beforeProcess " + item, null, LogLevel.INFO);
+//    LOGGER.log(Level.INFO, "beforeProcess {0}", item);
+//    logService.createLog(getName(), "beforeProcess " + item, null, LogLevel.INFO);
   }
 
   @Override
   public void afterProcess(Object item, Object result) throws Exception
   {
-    LOGGER.log(Level.INFO, "afterProcess {0} {1}", new Object[]{item, result});
-    logService.createLog(getName(), "afterProcess " + item + " " + result, null, LogLevel.INFO);
+//    LOGGER.log(Level.INFO, "afterProcess {0} {1}", new Object[]{item, result});
+//    logService.createLog(getName(), "afterProcess " + item + " " + result, null, LogLevel.INFO);
   }
 
   @Override
@@ -95,15 +95,15 @@ public abstract class Listener implements JobListener, StepListener, ItemProcess
   @Override
   public void beforeRead() throws Exception
   {
-    LOGGER.log(Level.INFO, "beforeRead ");
-    logService.createLog(getName(), "beforeRead ", null, LogLevel.INFO);
+//    LOGGER.log(Level.INFO, "beforeRead ");
+//    logService.createLog(getName(), "beforeRead ", null, LogLevel.INFO);
   }
 
   @Override
   public void afterRead(Object item) throws Exception
   {
-    LOGGER.log(Level.INFO, "afterRead {0}", item);
-    logService.createLog(getName(), "afterRead " + item, null, LogLevel.INFO);
+//    LOGGER.log(Level.INFO, "afterRead {0}", item);
+//    logService.createLog(getName(), "afterRead " + item, null, LogLevel.INFO);
   }
 
   @Override
@@ -116,15 +116,15 @@ public abstract class Listener implements JobListener, StepListener, ItemProcess
   @Override
   public void beforeWrite(List<Object> items) throws Exception
   {
-    LOGGER.log(Level.INFO, "beforeWrite {0}", items);
-    logService.createLog(getName(), "beforeWrite " + items, null, LogLevel.INFO);
+//    LOGGER.log(Level.INFO, "beforeWrite {0}", items);
+//    logService.createLog(getName(), "beforeWrite " + items, null, LogLevel.INFO);
   }
 
   @Override
   public void afterWrite(List<Object> items) throws Exception
   {
-    LOGGER.log(Level.INFO, "afterWrite {0}", items);
-    logService.createLog(getName(), "afterWrite " + items, null, LogLevel.INFO);
+//    LOGGER.log(Level.INFO, "afterWrite {0}", items);
+//    logService.createLog(getName(), "afterWrite " + items, null, LogLevel.INFO);
   }
 
   @Override

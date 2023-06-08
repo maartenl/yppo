@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 public class Reader extends AbstractItemReader
 {
 
-    private static final Logger logger = Logger.getLogger(Reader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Reader.class.getName());
 
     private int index = 0;
 
@@ -65,9 +65,9 @@ public class Reader extends AbstractItemReader
         // TODO : Mrbear: make it a "proper" job parameter.
         String locationIdString = (String) jobParameters.get("location");
         Long locationId = locationIdString == null ? 1L : Long.parseLong(locationIdString);
-        logger.log(Level.FINEST, "location id={0}", locationId);
+        LOGGER.log(Level.FINEST, "location id={0}", locationId);
         Location location = locationService.getLocation(locationId).orElseThrow(() -> new RuntimeException("Location with id " + locationId + " not found."));
-        logger.log(Level.FINEST, "location={0}", location.getFilepath());
+        LOGGER.log(Level.FINEST, "location={0}", location.getFilepath());
         return location;
     }
 
@@ -75,13 +75,13 @@ public class Reader extends AbstractItemReader
     @Override
     public void open(Serializable checkpoint) throws Exception
     {
-        logger.entering(this.getClass().getName(), "open");
+        LOGGER.entering(this.getClass().getName(), "open");
         if (checkpoint == null)
         {
-            logger.finest("addPhotographReader open start");
+            LOGGER.finest("addPhotographReader open start");
         } else
         {
-            logger.finest("addPhotographReader open restart");
+            LOGGER.finest("addPhotographReader open restart");
         }
         Location location = getLocation();
 
@@ -91,13 +91,13 @@ public class Reader extends AbstractItemReader
         Files.walkFileTree(startingDir, pf);
         files = pf.getFileList();
 
-        logger.exiting(this.getClass().getName(), "open");
+        LOGGER.exiting(this.getClass().getName(), "open");
     }
 
     @Override
     public Object readItem() throws Exception
     {
-        logger.finest("addPhotographReader readItem");
+        LOGGER.finest("addPhotographReader readItem");
         if (files == null || files.isEmpty())
         {
             throw new RuntimeException("No files found.");

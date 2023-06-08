@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -25,6 +27,7 @@ import java.util.logging.Logger;
 @Table(name = "Photograph")
 @NamedQuery(name = "Photograph.findByFilename", query = "SELECT p FROM Photograph p WHERE p.filename = :filename and p.relativepath = :relativepath")
 @NamedQuery(name = "Photograph.findByStats", query = "SELECT p FROM Photograph p WHERE p.hashstring = :hashstring and p.filesize = :filesize")
+@NamedQuery(name = "Photograph.findAllPks", query = "SELECT p.id from Photograph p")
 public class Photograph
 {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -176,6 +179,10 @@ public class Photograph
     public String getFullPath()
     {
         return getLocation().getFilepath() + File.separator + getRelativepath() + File.separator + getFilename();
+    }
+
+    public boolean doesFileExist() {
+        return Files.exists(Path.of(getFullPath()));
     }
 
     @Override

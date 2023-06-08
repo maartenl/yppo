@@ -13,6 +13,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "GalleryPhotograph")
 @NamedQuery(name = "GalleryPhotograph.findAll", query = "SELECT p FROM GalleryPhotograph p where p.galleryId = :galleryId order by p.sortorder, p.photograph.taken")
+@NamedQuery(name = "GalleryPhotograph.findByPhotograph", query = " SELECT p from GalleryPhotograph p where p.photograph = :photograph")
 public class GalleryPhotograph
 {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
