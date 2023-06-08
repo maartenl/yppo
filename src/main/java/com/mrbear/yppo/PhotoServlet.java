@@ -132,6 +132,7 @@ public class PhotoServlet extends HttpServlet
                                       <div class="mb-3">
                                         <label for="galleryPhotographAngle">Angle select</label>
                                         <select class="form-control" name="galleryPhotographAngle" id="galleryPhotographAngle">
+                                          <option value="unchanged">unchanged</option>
                                           <option value="1">Normal</option>
                                           <option value="2">Top/Rightside</option>
                                           <option value="3">Upside/Down</option>
@@ -305,8 +306,9 @@ public class PhotoServlet extends HttpServlet
     String galleryPhotographId = req.getParameter("galleryPhotographId");
     String galleryPhotographName = req.getParameter("galleryPhotographName");
     String galleryPhotographDescription = req.getParameter("galleryPhotographDescription");
-    ImageAngle galleryPhotographAngle = req.getParameter("galleryPhotographAngle") == null ? null :
-            ImageAngle.getAngle(Integer.valueOf(req.getParameter("galleryPhotographAngle"))).orElse(null);
+    String angle = req.getParameter("galleryPhotographAngle");
+    ImageAngle galleryPhotographAngle = angle == null || angle.equals("unchanged") ? null :
+            ImageAngle.getAngle(Integer.valueOf(angle)).orElse(null);
     if (galleryPhotographId != null && !galleryPhotographId.isBlank())
     {
       LOGGER.finest(String.format("doPost galleryPhotograph %s,%s,%s", galleryPhotographId, galleryPhotographName, galleryPhotographDescription));

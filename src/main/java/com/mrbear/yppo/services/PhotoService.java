@@ -86,7 +86,10 @@ public class PhotoService
             {
               galleryPhotograph.setName(galleryPhotographName);
               galleryPhotograph.setDescription(galleryPhotographDescription);
-              galleryPhotograph.getPhotograph().setAngle(galleryPhotographAngle);
+              if (galleryPhotographAngle != null)
+              {
+                galleryPhotograph.getPhotograph().setAngle(galleryPhotographAngle);
+              }
             });
   }
 
