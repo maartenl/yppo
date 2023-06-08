@@ -45,12 +45,12 @@ public class Writer extends AbstractItemWriter
         {
             String format = String.format("Removing GalleryPhotograph %s (refers to photograph %s that no longer exists)", galleryPhotograph.getId(), photograph.getId());
             LOGGER.severe(format);
-            logService.createLog("deletePhotographWriter", format, null, LogLevel.WARNING);
+            logService.createLog("deletePhotograph", format, null, LogLevel.WARNING);
             entityManager.remove(galleryPhotograph);
         }
         String format = String.format("Removing Photograph %s that no longer exists (at path %s)", photograph.getId(), photograph.getFullPath());
         LOGGER.severe(format);
-        logService.createLog("deletePhotographWriter", format, null, LogLevel.WARNING);
+        logService.createLog("deletePhotograph", format, null, LogLevel.WARNING);
         entityManager.remove(photograph);
     }
 }

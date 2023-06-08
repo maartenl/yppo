@@ -14,9 +14,9 @@
  ********************************************************************************/
 package com.mrbear.yppo.resources;
 
+import com.mrbear.yppo.jobs.delete.Reader;
 import jakarta.batch.operations.JobOperator;
 import jakarta.batch.runtime.BatchRuntime;
-import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -33,10 +33,25 @@ public class JobsResource
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<JobName> list()
+    public List<JobRecord> list()
     {
         JobOperator jobOperator = BatchRuntime.getJobOperator();
-        return jobOperator.getJobNames().stream().map(JobName::new).collect(Collectors.toList());
+        return jobOperator.getJobNames().stream().map(JobsResource::createJobRecord).collect(Collectors.toList());
+    }
+
+    private static JobRecord createJobRecord(String jobName)
+    {
+        long size = 1;
+        long position = 0;
+        if (jobName.equals("DeletePhotographs")) {
+            size = Reader.size.get();
+            position = Reader.position.get();
+        }
+        if (jobName.equals("VerifyPhotographs")) {
+            size = com.mrbear.yppo.jobs.verify.Reader.size.get();
+            position = com.mrbear.yppo.jobs.verify.Reader.position.get();
+        }
+        return new JobRecord(jobName, size, position, (position*100)/size);
     }
 
     @GET

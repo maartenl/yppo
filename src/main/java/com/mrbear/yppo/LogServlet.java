@@ -46,6 +46,7 @@ public class LogServlet extends HttpServlet
                         <thead>
                           <tr>
                             <th scope="col">Id</th>
+                            <th scope="col">Resource</th>
                             <th scope="col">Message</th>
                             <th scope="col">Datetime</th>
                             <th scope="col">Level</th>
@@ -69,19 +70,25 @@ public class LogServlet extends HttpServlet
     {
       description = String.format("""
               <tr>
-                <td colspan="4">%s</td>
+                <td colspan="5">%s</td>
               </tr>
               """, log.getDescription());
     }
+    String level = switch(log.getLoglevel()){
+      case INFO -> "table-light";
+      case WARNING -> "table-warning";
+      case ERROR -> "table-danger";
+    };
     return String.format("""
-                    <tr>
+                    <tr class="%s">
+                      <td>%s</td>
                       <td>%s</td>
                       <td>%s</td>
                       <td>%s</td>
                       <td>%s</td>
                     </tr>
                     """
-            , log.getId(), log.getMessage(), log.getCreationDate(), log.getLoglevel()) + description;
+            , level, log.getId(), log.getSource(), log.getMessage(), log.getCreationDate(), log.getLoglevel()) + description;
   }
 
   @Override

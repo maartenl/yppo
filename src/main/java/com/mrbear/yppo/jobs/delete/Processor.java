@@ -56,7 +56,7 @@ public class Processor implements ItemProcessor
     }
     String format = String.format("File %s of photograph %s does not exist.", photograph.getFullPath(), photograph.getId());
     LOGGER.severe(format);
-    logService.createLog("deletePhotographProcessor", format, null, LogLevel.WARNING);
+    logService.createLog("deletePhotograph", format, null, LogLevel.WARNING);
     if (dryrun)
     {
       return null;
