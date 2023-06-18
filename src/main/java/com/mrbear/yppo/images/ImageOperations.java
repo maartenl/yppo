@@ -32,10 +32,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,12 +45,20 @@ import java.util.logging.Logger;
 public class ImageOperations {
 
   /**
-   * Indicates if a path refers to an image or not.
+   * Indicates if a path refers to an image or mp4 or not.
    * @param path a path to a file
-   * @return true if it is an image, false otherwise.
+   * @return true if it is an image or mp4, false otherwise.
    */
   public static boolean isImage(String path) {
-    return !path.endsWith(".avi") && !path.endsWith(".AVI");
+    return !path.toLowerCase(Locale.ROOT).endsWith(".avi") && !path.toLowerCase(Locale.ROOT).endsWith(".webm");
+  }
+
+  public static boolean isMp4(String path) {
+    return path.toLowerCase(Locale.ROOT).endsWith(".mp4");
+  }
+
+  public static boolean isWebm(String path) {
+    return path.toLowerCase(Locale.ROOT).endsWith(".webm");
   }
 
   /**

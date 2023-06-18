@@ -39,7 +39,9 @@ For example: /home/maartenl/gallery3/var/albums
 4. changing files has sometimes caused the file to be damaged in some way
 5. changing files makes it impossible (or at the very least, extremely hard)
    to determine if the photo is already present in your collection
-
+6. webbrowsers currently have support for film clips in format .mp4 and .webm (without external plugins, I think)
+   there's support in this package for mp4,webm and avi, but the avi stuff doen't work great.
+7. 
 **) Sure, you can have the same photograph in multiple galleries or even in
 the same gallery, but these will refer to the SAME photograph. Every photograph
 is unique.

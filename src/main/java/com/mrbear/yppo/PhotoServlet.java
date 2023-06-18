@@ -111,6 +111,27 @@ public class PhotoServlet extends HttpServlet
             </div>
             """, galleryPhotograph.getName(), galleryPhotograph.getGalleryId()));
     // real photo
+    String image;
+    if (ImageOperations.isMp4(galleryPhotograph.getPhotograph().getFilename()))
+    {
+      image = String.format("""
+              <video controls>
+                <source src="/yourpersonalphotographorganiser/images?id=%s" type="%s">
+                Your browser does not support the video tag.
+              </video>
+              """, galleryPhotograph.getPhotograph().getId(), ImageServlet.MP4_CONTENTTYPE);
+    } else if (ImageOperations.isWebm(galleryPhotograph.getPhotograph().getFilename()))
+    {
+      image = String.format("""
+              <video controls>
+                <source src="/yourpersonalphotographorganiser/images?id=%s" type="%s">
+                Your browser does not support the video tag.
+              </video>
+              """, galleryPhotograph.getPhotograph().getId(), ImageServlet.WEBM_CONTENTTYPE);
+    } else
+    {
+      image = String.format("<img src=\"/yourpersonalphotographorganiser/images?id=%s&size=large\" alt=\"%s\"/>", galleryPhotograph.getPhotograph().getId(), galleryPhotograph.getName());
+    }
     out.println(String.format("""               
                         <div class="container text-center">
                           <div class="row">
@@ -148,7 +169,7 @@ public class PhotoServlet extends HttpServlet
                                       </div>
                                     </form>
                                   </div>
-                              <img src="/yourpersonalphotographorganiser/images?id=%s&size=large" alt="%s"/>
+                              %s
                               <p>%s</p>
                               %s                                                 
                             </div>
@@ -159,7 +180,7 @@ public class PhotoServlet extends HttpServlet
                         </div>                                   
                     """, previous.map(photo -> "<a href=\"/yourpersonalphotographorganiser/photos/" + photo.getId() + "\" class=\"btn btn-primary btn-sm\"><i class=\"bi bi-arrow-left-square-fill\"></i></a>").orElse(""),
             galleryPhotograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getDescription(),
-            galleryPhotograph.getPhotograph().getId(), galleryPhotograph.getName(), galleryPhotograph.getName(), description
+            image, galleryPhotograph.getName(), description
             , next.map(photo -> "<a href=\"/yourpersonalphotographorganiser/photos/" + photo.getId() + "\" class=\"btn btn-primary btn-sm\"><i class=\"bi bi-arrow-right-square-fill\"></i></a>").orElse("")
     ));
 
@@ -172,7 +193,7 @@ public class PhotoServlet extends HttpServlet
                                   </blockquote>
             """, comment.getComment(), comment.getAuthor(), comment.getSubmittedString())).collect(Collectors.joining());
 //                              <p class="card-text"></p>
-  //                            <h6 class="card-subtitle mb-2 text-muted"></h6>
+    //                            <h6 class="card-subtitle mb-2 text-muted"></h6>
 
     out.println(String.format("""
             <div class="container">

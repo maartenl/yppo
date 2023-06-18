@@ -55,6 +55,7 @@ public class ImageServlet extends HttpServlet
     public static final String PNG_CONTENTTYPE = "image/png";
     public static final String AVI_CONTENTTYPE = "video/x-msvideo";
     public static final String MP4_CONTENTTYPE = "video/mp4";
+    public static final String WEBM_CONTENTTYPE = "video/webm";
     public static final String DEFAULT_CONTENTTYPE = "text/html;charset=UTF-8";
 
     @Inject
@@ -160,6 +161,23 @@ public class ImageServlet extends HttpServlet
                     FileOperations.dumpFile(inputStream, response.getOutputStream());
                 } catch (IOException e) {
                     LOGGER.throwing(ImageServlet.class.getName(), "Mp4 file.", e);
+                }
+            }
+            return;
+        }
+        if (filename.toLowerCase().endsWith(".webm")) {
+            if (request.getParameter("size") != null) {
+                contentType = PNG_CONTENTTYPE;
+                response.setContentType(contentType);
+                FileOperations.dumpFile(getServletContext().getResourceAsStream("/images/movie.png"), response.getOutputStream());
+            } else {
+                contentType = WEBM_CONTENTTYPE;
+                response.setContentType(contentType);
+                // JDK7 : try-with-resources
+                try (FileInputStream inputStream = new FileInputStream(file)) {
+                    FileOperations.dumpFile(inputStream, response.getOutputStream());
+                } catch (IOException e) {
+                    LOGGER.throwing(ImageServlet.class.getName(), "Webm file.", e);
                 }
             }
             return;

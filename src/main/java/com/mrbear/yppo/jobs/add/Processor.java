@@ -50,7 +50,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -137,12 +136,9 @@ public class Processor implements ItemProcessor
         }
         LOGGER.log(Level.FINE, "processPhoto {0} {1}", new Object[]
                 {
-                        location.getFilepath(), path.toString()
+                        location.getFilepath(), path
                 });
         Path filename = path.getFileName();
-        if (filename.toString().endsWith(".mp4")) {
-            LOGGER.severe(filename.toString());
-        }
         Path locationPath = FileSystems.getDefault().getPath(location.getFilepath());
         Path relativePath = locationPath.relativize(path).getParent();
 
@@ -154,7 +150,7 @@ public class Processor implements ItemProcessor
         List<Photograph> listByFilename = query.getResultList();
         if (listByFilename != null && !listByFilename.isEmpty())
         {
-            LOGGER.log(Level.FINE, "{0} already exists.", path.toString());
+            LOGGER.log(Level.FINE, "{0} already exists.", path);
             return null;
         }
         // check if hash and filesize already exist in database
@@ -168,7 +164,7 @@ public class Processor implements ItemProcessor
         List<Photograph> listByStats = query.getResultList();
         if (listByStats != null && !listByStats.isEmpty())
         {
-            Photograph alreadyPhoto = (Photograph) listByStats.get(0);
+            Photograph alreadyPhoto = listByStats.get(0);
             String result = "File with filename " + relativePath.toString() + ":" + filename.toString() + " with hash " + computeHash + " already exists with id " + alreadyPhoto.getId() + ".";
             LOGGER.warning(result);
             log(result, null, LogLevel.WARNING);
