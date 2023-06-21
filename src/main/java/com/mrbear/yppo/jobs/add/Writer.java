@@ -75,7 +75,7 @@ public class Writer extends AbstractItemWriter
             LOGGER.log(Level.FINEST, "addPhotographWriter writeItem {0}", i);
             Photograph photograph = (Photograph) i;
             entityManager.persist(photograph);
-            logService.createLog("verifyPhotograph", "Photograph from file " + photograph.getFullPath() + " created.", null, LogLevel.INFO);
+            logService.createLog("addPhotograph", "Photograph from file " + photograph.getFullPath() + " created.", null, LogLevel.INFO);
         }
         LOGGER.exiting(this.getClass().getName(), "writeItems");
     }
