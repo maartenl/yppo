@@ -1,3 +1,4 @@
+[![Build Status](https://app.travis-ci.com/maartenl/yppo.svg?branch=master)](https://app.travis-ci.com/maartenl/yppo)
 
 An attempt from me at creating a Photo gallery.
 
