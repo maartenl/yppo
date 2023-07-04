@@ -110,6 +110,10 @@ public class Comment
     return Objects.hash(id, galleryphotographId, author, submitted, comment);
   }
 
+  /**
+   * Get the date and time when the comment was submitted.
+   * @return date and time when comment was submitted
+   */
   public String getSubmittedString()
   {
     if (getSubmitted() == null)
