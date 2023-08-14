@@ -6,6 +6,11 @@ It has almost everything you need for home use, I do not recommend it for websit
 
 # Configuration
 
+When deploying the war file onto an application server, the url to access
+will probably be:
+
+http://localhost:8080/yourpersonalphotographorganiser/
+
 The Location table refers to the root where all the photos are stored on the filesystem.
 
 It's possible to have more than one location.
