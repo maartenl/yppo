@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
-@Named("deletePhotographReader")
-public class Reader extends AbstractItemReader
+@Named
+public class DeletePhotographReader extends AbstractItemReader
 {
 
-    private static final Logger LOGGER = Logger.getLogger(Reader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DeletePhotographReader.class.getName());
 
     public static final AtomicLong size = new AtomicLong(1L);
     public static final AtomicLong position = new AtomicLong(0L);

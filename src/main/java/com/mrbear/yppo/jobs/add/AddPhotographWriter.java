@@ -35,11 +35,11 @@ import java.util.logging.Logger;
  *
  * @author maartenl
  */
-@Named("addPhotographWriter")
-public class Writer extends AbstractItemWriter
+@Named
+public class AddPhotographWriter extends AbstractItemWriter
 {
 
-    private static final Logger LOGGER = Logger.getLogger(Writer.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AddPhotographWriter.class.getName());
 
     @PersistenceContext(unitName = "yppo")
     private EntityManager entityManager;
