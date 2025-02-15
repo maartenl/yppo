@@ -3,6 +3,7 @@ package com.mrbear.yppo;
 import com.mrbear.yppo.entities.Gallery;
 import com.mrbear.yppo.entities.GalleryPhotograph;
 import com.mrbear.yppo.entities.Photograph;
+import com.mrbear.yppo.entities.Utils;
 import com.mrbear.yppo.services.GalleryService;
 import com.mrbear.yppo.services.PhotoService;
 import jakarta.inject.Inject;
@@ -16,7 +17,6 @@ import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -131,6 +131,11 @@ public class PhotosServlet extends HttpServlet
                               <div id="galleryNameHelp" class="form-text">The (short) name of the gallery.</div>
                             </div>
                             <div class="mb-3">
+                              <label for="galleryHighlight" class="form-label"><a href="/yourpersonalphotographorganiser/images?id=%d">Gallery highlight</a></label>
+                              <input type="text" class="form-control" name="galleryHighlight" id="galleryHighlight" aria-describedby="galleryHighlightHelp" value="%d">
+                              <div id="galleryHighlightHelp" class="form-text">The photo that is being used to identify this gallery.</div>
+                            </div>
+                            <div class="mb-3">
                               <label for="galleryDescription" class="form-label">Description</label>
                               <textarea class="form-control" name="galleryDescription" id="galleryDescription" rows="6">%s</textarea>
                             </div>
@@ -142,7 +147,7 @@ public class PhotosServlet extends HttpServlet
                       </div>
                     </div>
                     %s
-                """,gallery.getName(), gallery.getDescription(), gallery.getId(), gallery.getName(), gallery.getDescription(), description));
+                """,gallery.getName(), gallery.getDescription(), gallery.getId(), gallery.getName(), gallery.getHighlight(),  gallery.getHighlight(), gallery.getDescription(), description));
         out.println(HtmlUtils.getFooter());
     }
 
@@ -155,11 +160,13 @@ public class PhotosServlet extends HttpServlet
 
         String galleryId = req.getParameter("galleryId");
         String galleryName = req.getParameter("galleryName");
+        String galleryHighlight = req.getParameter("galleryHighlight");
         String galleryDescription = req.getParameter("galleryDescription");
         if (galleryId != null && !galleryId.isBlank())
         {
             LOGGER.finest(String.format("doPost Gallery %s,%s,%s", galleryId, galleryName, galleryDescription));
-            galleryService.updateGallery(Long.valueOf(galleryId), galleryName, galleryDescription);
+            galleryService.updateGallery(Utils.getValueAsLong(galleryId), galleryName, galleryDescription,
+                Utils.getValueAsLong(galleryHighlight));
         }
 
         // Writing the message on the web page

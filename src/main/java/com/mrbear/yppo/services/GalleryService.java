@@ -34,15 +34,16 @@ public class GalleryService
         return Optional.ofNullable(entityManager.find(Gallery.class, id));
     }
 
-    public void updateGallery(Long galleryId, String galleryName, String galleryDescription)
+    public void updateGallery(Long galleryId, String galleryName, String galleryDescription, Long galleryHighlight)
     {
-        String logmessage = String.format("Changing data on gallery %s to (%s,%s)", galleryId, galleryName, galleryDescription);
+        String logmessage = String.format("Changing data on gallery %s to (%s,%s,%s)", galleryId, galleryName, galleryDescription, galleryHighlight);
         LOGGER.finest(logmessage);
         logService.createLog("GalleryService", logmessage, null, LogLevel.INFO);
         getGallery(galleryId).ifPresent(gallery ->
         {
             gallery.setName(galleryName);
             gallery.setDescription(galleryDescription);
+            gallery.setHighlight(galleryHighlight);
         });
     }
 }
