@@ -35,7 +35,7 @@ public class GalleryService
         return Optional.ofNullable(entityManager.find(Gallery.class, id));
     }
 
-    public void updateGallery(Long galleryId, String galleryName, String galleryDescription, Long galleryHighlight, Long parentGallery)
+    public void updateGallery(Long galleryId, String galleryName, String galleryDescription, Long galleryHighlight, Long parentGallery, int sortorder)
     {
         String logmessage = String.format("Changing data on gallery %s to (%s,%s,%s,%s)", galleryId, galleryName, galleryDescription, galleryHighlight, parentGallery);
         LOGGER.finest(logmessage);
@@ -46,6 +46,7 @@ public class GalleryService
             gallery.setDescription(galleryDescription);
             gallery.setHighlight(galleryHighlight);
             gallery.setParentId(parentGallery);
+            gallery.setSortorder(sortorder);
         });
     }
 

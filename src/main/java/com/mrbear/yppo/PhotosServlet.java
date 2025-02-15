@@ -131,6 +131,11 @@ public class PhotosServlet extends HttpServlet
                               <div id="galleryParentHelp" class="form-text">The parent of this gallery (which must therefore also be a gallery).</div>
                             </div>
                             <div class="mb-3">
+                              <label for="sortorder" class="form-label">Sort order</label>
+                              <input type="text" class="form-control" name="sortorder" id="sortorder" aria-describedby="sortorderHelp" value="%s">
+                              <div id="sortorderHelp" class="form-text">Integer, natural ordering.</div>
+                            </div>
+                            <div class="mb-3">
                               <label for="galleryName" class="form-label">Gallery name</label>
                               <input type="text" class="form-control" name="galleryName" id="galleryName" aria-describedby="galleryNameHelp" value="%s">
                               <div id="galleryNameHelp" class="form-text">The (short) name of the gallery.</div>
@@ -152,7 +157,7 @@ public class PhotosServlet extends HttpServlet
                       </div>
                     </div>
                     %s
-                """,gallery.getName(), gallery.getDescription(), gallery.getId(), gallery.getParentId(), gallery.getName(), gallery.getHighlight(),  gallery.getHighlight(), gallery.getDescription(), description));
+                """,gallery.getName(), gallery.getDescription(), gallery.getId(), gallery.getParentId(), gallery.getSortorder(), gallery.getName(), gallery.getHighlight(),  gallery.getHighlight(), gallery.getDescription(), description));
         out.println(HtmlUtils.getFooter());
     }
 
@@ -168,11 +173,14 @@ public class PhotosServlet extends HttpServlet
         String galleryHighlight = req.getParameter("galleryHighlight");
         String galleryDescription = req.getParameter("galleryDescription");
         String parentGallery = req.getParameter("galleryParent");
+        Long sortOrderAsLong = Utils.getValueAsLong(req.getParameter("sortorder"));
+        // sortorder is always a value, the default being 0.
+        int sortorder = sortOrderAsLong == null ? 0 : sortOrderAsLong.intValue();
         if (galleryId != null && !galleryId.isBlank())
         {
             LOGGER.finest(String.format("doPost Gallery %s,%s,%s", galleryId, galleryName, galleryDescription));
             galleryService.updateGallery(Utils.getValueAsLong(galleryId), galleryName, galleryDescription,
-                Utils.getValueAsLong(galleryHighlight), Utils.getValueAsLong(parentGallery));
+                Utils.getValueAsLong(galleryHighlight), Utils.getValueAsLong(parentGallery), sortorder);
         }
 
         // Writing the message on the web page
