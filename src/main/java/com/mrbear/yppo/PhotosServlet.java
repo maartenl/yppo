@@ -120,7 +120,11 @@ public class PhotosServlet extends HttpServlet
                       <div class="row">
                         <div class="col">
                           <form method="POST">
-                            <input type="hidden" class="form-control" name="galleryId" id="galleryId" value="%s">
+                            <div class="mb-3">
+                              <label for="galleryId" class="form-label">Gallery id</label>
+                              <input type="text" readonly class="form-control" name="galleryId" id="galleryId" aria-describedby="galleryIdHelp" value="%d">
+                              <div id="galleryIdHelp" class="form-text">The identification of the gallery.</div>
+                            </div>
                             <div class="mb-3">
                               <label for="galleryName" class="form-label">Gallery name</label>
                               <input type="text" class="form-control" name="galleryName" id="galleryName" aria-describedby="galleryNameHelp" value="%s">
@@ -138,7 +142,7 @@ public class PhotosServlet extends HttpServlet
                       </div>
                     </div>
                     %s
-                """, gallery.getName(), gallery.getDescription(), gallery.getId(), gallery.getName(), gallery.getDescription(), description));
+                """,gallery.getName(), gallery.getDescription(), gallery.getId(), gallery.getName(), gallery.getDescription(), description));
         out.println(HtmlUtils.getFooter());
     }
 
