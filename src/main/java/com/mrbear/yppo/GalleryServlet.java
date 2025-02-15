@@ -1,6 +1,7 @@
 package com.mrbear.yppo;
 
 import com.mrbear.yppo.entities.Gallery;
+import com.mrbear.yppo.entities.Utils;
 import com.mrbear.yppo.services.GalleryService;
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
@@ -8,17 +9,21 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @WebServlet(name = "Galleries", urlPatterns = {"/galleries"})
 public class GalleryServlet extends HttpServlet
 {
+
+  private static final Logger LOGGER = Logger.getLogger(GalleryServlet.class.getName());
 
   @Inject
   private GalleryService galleryService;
@@ -92,13 +97,49 @@ public class GalleryServlet extends HttpServlet
                 </div>
               </div>
             </div>
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  <form method="POST">
+                    <div class="mb-3">
+                      <label for="newGalleryName" class="form-label">New gallery name</label>
+                      <input type="text" class="form-control" name="newGalleryName" id="newGalleryName">
+                    </div>
+                    <div>
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
         """, description));
     out.println(HtmlUtils.getFooter());
   }
 
+  @Transactional
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
   {
-    super.doPost(req, resp);
+    String galleryName = req.getParameter("newGalleryName");
+    if (galleryName != null && !galleryName.isBlank())
+    {
+      LOGGER.finest(String.format("doPost New Gallery %s", galleryName));
+      galleryService.createGallery(galleryName);
+    }
+
+    // Writing the message on the web page
+    PrintWriter out = resp.getWriter();
+    out.println(HtmlUtils.getHeader());
+    out.println(String.format("""
+                    <div class="container">
+                      <div class="row">
+                        <div class="col">
+                          <div class="alert alert-primary" role="alert">
+                            Data submitted. <a href="/yourpersonalphotographorganiser/galleries" class="btn btn-primary btn-sm">Back to gallery</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>"""));
+    out.println(HtmlUtils.getFooter());
   }
 }

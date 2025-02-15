@@ -8,6 +8,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -46,5 +47,16 @@ public class GalleryService
             gallery.setHighlight(galleryHighlight);
             gallery.setParentId(parentGallery);
         });
+    }
+
+    public void createGallery(String galleryName)
+    {
+        String logmessage = String.format("Creating gallery %s", galleryName);
+        LOGGER.finest(logmessage);
+        logService.createLog("GalleryService", logmessage, null, LogLevel.INFO);
+        var gallery = new Gallery();
+        gallery.setName(galleryName);
+        gallery.setCreationDate(LocalDateTime.now());
+        entityManager.persist(gallery);
     }
 }
