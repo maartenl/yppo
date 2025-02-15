@@ -28,6 +28,6 @@
             <reader ref="verifyPhotographReader"/>
             <processor ref="verifyPhotographProcessor"/>
             <writer ref="verifyPhotographWriter"/>
-        </chunk> 
+        </chunk>
     </step>
 </job>
