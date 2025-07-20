@@ -58,10 +58,15 @@ public class PhotoServlet extends HttpServlet
     // for example: /yourpersonalphotographorganiser/photos/1
     String[] requestURI = req.getRequestURI().split("/");
     Long id = Long.valueOf(requestURI[requestURI.length - 1]);
-    Optional<GalleryPhotograph> galleryPhotographOptional = photoService.getGalleryPhotograph(id);
+    PrintWriter out = resp.getWriter();
+    writeContent(id, out);
+  }
+
+  private void writeContent(Long galleryPhotographId, PrintWriter out) throws IOException
+  {
+    Optional<GalleryPhotograph> galleryPhotographOptional = photoService.getGalleryPhotograph(galleryPhotographId);
     if (galleryPhotographOptional.isEmpty())
     {
-      PrintWriter out = resp.getWriter();
       out.println("GalleryPhotograph not found.");
       return;
     }
@@ -94,7 +99,6 @@ public class PhotoServlet extends HttpServlet
     }
 
     // Writing the message on the web page
-    PrintWriter out = resp.getWriter();
     out.println(HtmlUtils.getHeader());
     // header buttons etc.
     out.println(String.format("""               
@@ -308,7 +312,7 @@ public class PhotoServlet extends HttpServlet
                   </div>
                 </div>
               </div>
-                """, contents));
+              """, contents));
 
     } catch (ImageProcessingException e)
     {
@@ -338,17 +342,6 @@ public class PhotoServlet extends HttpServlet
 
     // Writing the message on the web page
     PrintWriter out = resp.getWriter();
-    out.println(HtmlUtils.getHeader());
-    out.println(String.format("""
-            <div class="container">
-              <div class="row">
-                <div class="col">
-                  <div class="alert alert-primary" role="alert">
-                    Data submitted. <a href="/yourpersonalphotographorganiser/photos/%s" class="btn btn-primary btn-sm">Back to photo</a>
-                  </div>
-                </div>
-              </div>
-            </div>""", id));
-    out.println(HtmlUtils.getFooter());
+    writeContent(id, out);
   }
 }

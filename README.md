@@ -46,6 +46,13 @@ For example: /home/maartenl/gallery3/var/albums
 the same gallery, but these will refer to the SAME photograph. Every photograph
 is unique.
 
+# Creating a new Gallery
+
+You can create a new gallery by typing the name of the new Gallery on the main Galleries page.
+
+Then you can find the new Gallery probably at the bottom of the Galleries, en you can select it, and then edit
+its settings (and the Gallery ID of its parent, if it's not supposed to be on the main branch).
+
 # Adding photos to a Gallery
 
 First of all, you can verify if there are any photographs that are not yet allocated to a gallery:
@@ -54,16 +61,26 @@ select *
 from Photograph 
 where not exists (select 1 from GalleryPhotograph where photograph_id = Photograph.id);
 
-Creating a Gallery is no more than:
-
-insert into Gallery (name, parent_id, sortorder) values('Vacation 2008', 2, 0);
-
-Then you can simply add those photographs to a gallery of your choice, for instance:
+You can simply add those photographs to a gallery of your choice, for instance:
 
 insert into GalleryPhotograph (gallery_id, photograph_id, name, description, sortorder)
-select 48, id, filename, null, 0 from Photograph where relativepath like '%vacation%'
+select 77, id, filename, null, 0 from Photograph where relativepath like 'huis/dak'
 and not exists (select 1 from GalleryPhotograph where photograph_id=Photograph.id);
 
+# Sorting photos in a Gallery
+
+Usually, photos added to a gallery are sorted by their timestamp. Sometimes, that timestamp is not available
+(for example when using photos retrieved from a social media platform). In that case, it might be possible to get
+the timestamp from the filename for setting the sortorder.
+
+For example if you have many files of the following format: "IMG-20191030-WA0020.jpg"
+
+You could try something like this:
+
+update GalleryPhotograph g inner join (
+select * from Photograph p) as p on p.id = g.photograph_id
+Set g.sortorder = concat(substring(p.filename, 5, 8), substring(p.filename, 16, 4))
+where g.gallery_id = 76;
 
 # Technology stack
 
