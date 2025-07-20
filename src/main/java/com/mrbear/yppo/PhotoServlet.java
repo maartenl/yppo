@@ -58,11 +58,12 @@ public class PhotoServlet extends HttpServlet
     // for example: /yourpersonalphotographorganiser/photos/1
     String[] requestURI = req.getRequestURI().split("/");
     Long id = Long.valueOf(requestURI[requestURI.length - 1]);
+    boolean editing = "true".equalsIgnoreCase(req.getParameter("editing"));
     PrintWriter out = resp.getWriter();
-    writeContent(id, out);
+    writeContent(id, out, editing);
   }
 
-  private void writeContent(Long galleryPhotographId, PrintWriter out) throws IOException
+  private void writeContent(Long galleryPhotographId, PrintWriter out, boolean editing) throws IOException
   {
     Optional<GalleryPhotograph> galleryPhotographOptional = photoService.getGalleryPhotograph(galleryPhotographId);
     if (galleryPhotographOptional.isEmpty())
@@ -143,9 +144,10 @@ public class PhotoServlet extends HttpServlet
                               %s
                             </div>
                             <div class="col">
-                                <div class="collapse collapsed-forms">
+                                <div class="%s collapsed-forms">
                                     <form method="POST">
                                       <input type="hidden" class="form-control" name="galleryPhotographId" id="galleryPhotographId" value="%s">
+                                      <input type="hidden" class="form-control" name="editing" id="editing" value="true">
                                       <div class="mb-3">
                                         <label for="galleryPhotographName" class="form-label">Name</label>
                                         <input type="text" class="form-control" name="galleryPhotographName" id="galleryPhotographName" value="%s">
@@ -182,10 +184,11 @@ public class PhotoServlet extends HttpServlet
                             </div>
                           </div>  
                         </div>                                   
-                    """, previous.map(photo -> "<a href=\"/yourpersonalphotographorganiser/photos/" + photo.getId() + "\" class=\"btn btn-primary btn-sm\"><i class=\"bi bi-arrow-left-square-fill\"></i></a>").orElse(""),
+                    """, previous.map(photo -> "<a href=\"/yourpersonalphotographorganiser/photos/" + photo.getId() + "?editing=" + editing + "\" class=\"btn btn-primary btn-sm\"><i class=\"bi bi-arrow-left-square-fill\"></i></a>").orElse(""),
+            editing?"collapse show":"collapse",
             galleryPhotograph.getId(), galleryPhotograph.getName(), galleryPhotograph.getDescription(),
             image, galleryPhotograph.getName(), description
-            , next.map(photo -> "<a href=\"/yourpersonalphotographorganiser/photos/" + photo.getId() + "\" class=\"btn btn-primary btn-sm\"><i class=\"bi bi-arrow-right-square-fill\"></i></a>").orElse("")
+            , next.map(photo -> "<a href=\"/yourpersonalphotographorganiser/photos/" + photo.getId() + "?editing=" + editing + "\" class=\"btn btn-primary btn-sm\"><i class=\"bi bi-arrow-right-square-fill\"></i></a>").orElse("")
     ));
 
     List<Comment> comments = commentService.getComments(galleryPhotograph);
@@ -342,6 +345,6 @@ public class PhotoServlet extends HttpServlet
 
     // Writing the message on the web page
     PrintWriter out = resp.getWriter();
-    writeContent(id, out);
+    writeContent(id, out, true);
   }
 }
