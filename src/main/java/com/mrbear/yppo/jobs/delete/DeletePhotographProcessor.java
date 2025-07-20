@@ -16,10 +16,10 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-@Named("deletePhotographProcessor")
-public class Processor implements ItemProcessor
+@Named
+public class DeletePhotographProcessor implements ItemProcessor
 {
-  private static final Logger LOGGER = Logger.getLogger(Processor.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(DeletePhotographProcessor.class.getName());
 
   @PersistenceContext(unitName = "yppo")
   private EntityManager entityManager;

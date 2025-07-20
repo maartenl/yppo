@@ -3,6 +3,7 @@ package com.mrbear.yppo;
 import com.mrbear.yppo.entities.Gallery;
 import com.mrbear.yppo.entities.GalleryPhotograph;
 import com.mrbear.yppo.entities.Photograph;
+import com.mrbear.yppo.entities.Utils;
 import com.mrbear.yppo.services.GalleryService;
 import com.mrbear.yppo.services.PhotoService;
 import jakarta.inject.Inject;
@@ -16,7 +17,6 @@ import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -120,11 +120,30 @@ public class PhotosServlet extends HttpServlet
                       <div class="row">
                         <div class="col">
                           <form method="POST">
-                            <input type="hidden" class="form-control" name="galleryId" id="galleryId" value="%s">
+                            <div class="mb-3">
+                              <label for="galleryId" class="form-label">Gallery id</label>
+                              <input type="text" readonly class="form-control" name="galleryId" id="galleryId" aria-describedby="galleryIdHelp" value="%d">
+                              <div id="galleryIdHelp" class="form-text">The identification of the gallery.</div>
+                            </div>
+                            <div class="mb-3">
+                              <label for="galleryParent" class="form-label">Parent gallery</label>
+                              <input type="text" class="form-control" name="galleryParent" id="galleryParent" aria-describedby="galleryParentHelp" value="%s">
+                              <div id="galleryParentHelp" class="form-text">The parent of this gallery (which must therefore also be a gallery).</div>
+                            </div>
+                            <div class="mb-3">
+                              <label for="sortorder" class="form-label">Sort order</label>
+                              <input type="text" class="form-control" name="sortorder" id="sortorder" aria-describedby="sortorderHelp" value="%s">
+                              <div id="sortorderHelp" class="form-text">Integer, natural ordering.</div>
+                            </div>
                             <div class="mb-3">
                               <label for="galleryName" class="form-label">Gallery name</label>
                               <input type="text" class="form-control" name="galleryName" id="galleryName" aria-describedby="galleryNameHelp" value="%s">
                               <div id="galleryNameHelp" class="form-text">The (short) name of the gallery.</div>
+                            </div>
+                            <div class="mb-3">
+                              <label for="galleryHighlight" class="form-label"><a href="/yourpersonalphotographorganiser/images?id=%d">Gallery highlight</a></label>
+                              <input type="text" class="form-control" name="galleryHighlight" id="galleryHighlight" aria-describedby="galleryHighlightHelp" value="%d">
+                              <div id="galleryHighlightHelp" class="form-text">The photo that is being used to identify this gallery.</div>
                             </div>
                             <div class="mb-3">
                               <label for="galleryDescription" class="form-label">Description</label>
@@ -138,7 +157,7 @@ public class PhotosServlet extends HttpServlet
                       </div>
                     </div>
                     %s
-                """, gallery.getName(), gallery.getDescription(), gallery.getId(), gallery.getName(), gallery.getDescription(), description));
+                """,gallery.getName(), gallery.getDescription(), gallery.getId(), gallery.getParentId(), gallery.getSortorder(), gallery.getName(), gallery.getHighlight(),  gallery.getHighlight(), gallery.getDescription(), description));
         out.println(HtmlUtils.getFooter());
     }
 
@@ -151,11 +170,17 @@ public class PhotosServlet extends HttpServlet
 
         String galleryId = req.getParameter("galleryId");
         String galleryName = req.getParameter("galleryName");
+        String galleryHighlight = req.getParameter("galleryHighlight");
         String galleryDescription = req.getParameter("galleryDescription");
+        String parentGallery = req.getParameter("galleryParent");
+        Long sortOrderAsLong = Utils.getValueAsLong(req.getParameter("sortorder"));
+        // sortorder is always a value, the default being 0.
+        int sortorder = sortOrderAsLong == null ? 0 : sortOrderAsLong.intValue();
         if (galleryId != null && !galleryId.isBlank())
         {
             LOGGER.finest(String.format("doPost Gallery %s,%s,%s", galleryId, galleryName, galleryDescription));
-            galleryService.updateGallery(Long.valueOf(galleryId), galleryName, galleryDescription);
+            galleryService.updateGallery(Utils.getValueAsLong(galleryId), galleryName, galleryDescription,
+                Utils.getValueAsLong(galleryHighlight), Utils.getValueAsLong(parentGallery), sortorder);
         }
 
         // Writing the message on the web page

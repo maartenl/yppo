@@ -1,9 +1,15 @@
+[![Build Status](https://app.travis-ci.com/maartenl/yppo.svg?branch=master)](https://app.travis-ci.com/maartenl/yppo)
 
 An attempt from me at creating a Photo gallery.
 
 It has almost everything you need for home use, I do not recommend it for website use.
 
 # Configuration
+
+When deploying the war file onto an application server, the url to access
+will probably be:
+
+http://localhost:8080/yourpersonalphotographorganiser/
 
 The Location table refers to the root where all the photos are stored on the filesystem.
 

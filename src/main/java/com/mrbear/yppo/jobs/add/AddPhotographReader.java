@@ -40,11 +40,11 @@ import java.util.logging.Logger;
 /**
  * @author maartenl
  */
-@Named("addPhotographReader")
-public class Reader extends AbstractItemReader
+@Named
+public class AddPhotographReader extends AbstractItemReader
 {
 
-    private static final Logger LOGGER = Logger.getLogger(Reader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AddPhotographReader.class.getName());
 
     private int index = 0;
 

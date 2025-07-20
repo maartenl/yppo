@@ -56,11 +56,11 @@ import java.util.logging.Logger;
  * Processes a new photograph, by retrieving its data and adding
  * it to the database.</p>
  */
-@Named("addPhotographProcessor")
-public class Processor implements ItemProcessor
+@Named
+public class AddPhotographProcessor implements ItemProcessor
 {
 
-    private static final Logger LOGGER = Logger.getLogger(Processor.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(AddPhotographProcessor.class.getName());
 
     @Inject
     private LogService logService;

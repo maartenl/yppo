@@ -14,7 +14,8 @@
  ********************************************************************************/
 package com.mrbear.yppo.resources;
 
-import com.mrbear.yppo.jobs.delete.Reader;
+import com.mrbear.yppo.jobs.delete.DeletePhotographReader;
+import com.mrbear.yppo.jobs.verify.VerifyPhotographReader;
 import jakarta.batch.operations.JobOperator;
 import jakarta.batch.runtime.BatchRuntime;
 import jakarta.ws.rs.GET;
@@ -44,12 +45,12 @@ public class JobsResource
         long size = 1;
         long position = 0;
         if (jobName.equals("DeletePhotographs")) {
-            size = Reader.size.get();
-            position = Reader.position.get();
+            size = DeletePhotographReader.size.get();
+            position = DeletePhotographReader.position.get();
         }
         if (jobName.equals("VerifyPhotographs")) {
-            size = com.mrbear.yppo.jobs.verify.Reader.size.get();
-            position = com.mrbear.yppo.jobs.verify.Reader.position.get();
+            size = VerifyPhotographReader.size.get();
+            position = VerifyPhotographReader.position.get();
         }
         return new JobRecord(jobName, size, position, (position*100)/size);
     }

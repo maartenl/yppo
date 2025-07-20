@@ -6,7 +6,6 @@ import com.mrbear.yppo.entities.Photograph;
 import com.mrbear.yppo.services.LogService;
 import com.mrbear.yppo.services.PhotoService;
 import jakarta.batch.api.chunk.AbstractItemWriter;
-import jakarta.batch.runtime.context.JobContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
@@ -16,11 +15,11 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.logging.Logger;
 
-@Named("deletePhotographWriter")
-public class Writer extends AbstractItemWriter
+@Named
+public class DeletePhotographWriter extends AbstractItemWriter
 {
 
-    private static final Logger LOGGER = Logger.getLogger(Writer.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DeletePhotographWriter.class.getName());
 
     @PersistenceContext(unitName = "yppo")
     private EntityManager entityManager;

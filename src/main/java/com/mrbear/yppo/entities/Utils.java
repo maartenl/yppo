@@ -5,6 +5,8 @@ import java.io.StringWriter;
 
 public class Utils
 {
+    public static final String NULL_STRING = "null";
+
     private Utils()
     {
         // create a private constructor to hide the public one.
@@ -12,11 +14,20 @@ public class Utils
 
     public static String getValue(String value)
     {
-        if (value != null && (value.isBlank() || value.equals("null")))
+        if (value != null && (value.isBlank() || value.equalsIgnoreCase(NULL_STRING)))
         {
             return null;
         }
         return value;
+    }
+
+    public static Long getValueAsLong(String value)
+    {
+        if (value != null && (value.isBlank() || value.equalsIgnoreCase(NULL_STRING)))
+        {
+            return null;
+        }
+        return Long.valueOf(value);
     }
 
     public static String getStacktrace(Throwable e)

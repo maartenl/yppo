@@ -18,14 +18,13 @@ package com.mrbear.yppo.jobs.add;
 
 import com.mrbear.yppo.jobs.Listener;
 import jakarta.inject.Named;
-import jakarta.transaction.Transactional;
 
 /**
  *
  * @author maartenl
  */
-@Named("addPhotographListener")
-public class AddListener extends Listener
+@Named
+public class AddPhotographListener extends Listener
 {
 
     @Override

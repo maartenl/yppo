@@ -8,18 +8,16 @@ import com.mrbear.yppo.services.PhotoService;
 import jakarta.batch.api.chunk.ItemProcessor;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
-@Named("verifyPhotographProcessor")
-public class Processor implements ItemProcessor
+@Named
+public class VerifyPhotographProcessor implements ItemProcessor
 {
-  private static final Logger LOGGER = Logger.getLogger(Processor.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(VerifyPhotographProcessor.class.getName());
 
   @Inject
   private PhotoService photoService;

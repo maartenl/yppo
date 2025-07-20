@@ -1,12 +1,10 @@
-package com.mrbear.yppo.jobs.verify;
+package com.mrbear.yppo.jobs.delete;
 
 
 import com.mrbear.yppo.services.PhotoService;
 import jakarta.batch.api.chunk.AbstractItemReader;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
 import java.io.Serializable;
@@ -15,23 +13,17 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
-@Named("verifyPhotographReader")
-public class Reader extends AbstractItemReader
+@Named
+public class DeletePhotographReader extends AbstractItemReader
 {
 
-    private static final Logger LOGGER = Logger.getLogger(Reader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DeletePhotographReader.class.getName());
 
     public static final AtomicLong size = new AtomicLong(1L);
     public static final AtomicLong position = new AtomicLong(0L);
 
-    /**
-     * Identification numbers of the photographs to check.
-     */
     private List<Long> ids;
     private Iterator<Long> iterator;
-
-    @PersistenceContext(unitName = "yppo")
-    private EntityManager em;
 
     @Inject
     private PhotoService photoService;

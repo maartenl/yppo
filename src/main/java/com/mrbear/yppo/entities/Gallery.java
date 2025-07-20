@@ -3,6 +3,7 @@ package com.mrbear.yppo.entities;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -27,7 +28,7 @@ public class Gallery
     private String description;
     @Basic
     @Column(name = "creation_date")
-    private Timestamp creationDate;
+    private LocalDateTime creationDate;
     @Basic
     @Column(name = "parent_id")
     private Long parentId;
@@ -68,12 +69,12 @@ public class Gallery
         this.description = Utils.getValue(description);
     }
 
-    public Timestamp getCreationDate()
+    public LocalDateTime getCreationDate()
     {
         return creationDate;
     }
 
-    public void setCreationDate(Timestamp creationDate)
+    public void setCreationDate(LocalDateTime creationDate)
     {
         this.creationDate = creationDate;
     }

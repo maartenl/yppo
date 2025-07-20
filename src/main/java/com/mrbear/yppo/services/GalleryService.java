@@ -8,6 +8,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -34,15 +35,29 @@ public class GalleryService
         return Optional.ofNullable(entityManager.find(Gallery.class, id));
     }
 
-    public void updateGallery(Long galleryId, String galleryName, String galleryDescription)
+    public void updateGallery(Long galleryId, String galleryName, String galleryDescription, Long galleryHighlight, Long parentGallery, int sortorder)
     {
-        String logmessage = String.format("Changing data on gallery %s to (%s,%s)", galleryId, galleryName, galleryDescription);
+        String logmessage = String.format("Changing data on gallery %s to (%s,%s,%s,%s)", galleryId, galleryName, galleryDescription, galleryHighlight, parentGallery);
         LOGGER.finest(logmessage);
         logService.createLog("GalleryService", logmessage, null, LogLevel.INFO);
         getGallery(galleryId).ifPresent(gallery ->
         {
             gallery.setName(galleryName);
             gallery.setDescription(galleryDescription);
+            gallery.setHighlight(galleryHighlight);
+            gallery.setParentId(parentGallery);
+            gallery.setSortorder(sortorder);
         });
+    }
+
+    public void createGallery(String galleryName)
+    {
+        String logmessage = String.format("Creating gallery %s", galleryName);
+        LOGGER.finest(logmessage);
+        logService.createLog("GalleryService", logmessage, null, LogLevel.INFO);
+        var gallery = new Gallery();
+        gallery.setName(galleryName);
+        gallery.setCreationDate(LocalDateTime.now());
+        entityManager.persist(gallery);
     }
 }
