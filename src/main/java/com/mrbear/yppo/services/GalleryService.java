@@ -30,6 +30,13 @@ public class GalleryService
         return query.getResultList();
     }
 
+    public List<Gallery> getSubGalleries(Gallery gallery)
+    {
+        TypedQuery<Gallery> query = entityManager.createNamedQuery("Gallery.findSubGalleries", Gallery.class);
+        query.setParameter("gallery", gallery.getId());
+        return query.getResultList();
+    }
+
     public Optional<Gallery> getGallery(Long id)
     {
         return Optional.ofNullable(entityManager.find(Gallery.class, id));

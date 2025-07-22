@@ -14,6 +14,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "Gallery")
 @NamedQuery(name = "Gallery.findAll", query = "SELECT p FROM Gallery p")
+@NamedQuery(name = "Gallery.findSubGalleries", query = "SELECT p FROM Gallery p where p.parentId = :gallery order by p.sortorder")
 public class Gallery
 {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
