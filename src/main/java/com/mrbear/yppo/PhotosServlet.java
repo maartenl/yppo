@@ -121,6 +121,9 @@ public class PhotosServlet extends HttpServlet
                         %s
                         <a class="btn btn-primary btn-sm" data-bs-toggle="collapse" data-bs-target=".collapsed-forms" role="button" aria-expanded="false" aria-controls=".collapsed-forms">Edit</a>
                       </div>
+                      <div class="alert alert-success" role="alert">
+                        There are %s photos in this gallery.
+                      </div>
                       <div class="alert alert-primary" role="alert">
                         %s
                       </div>
@@ -168,7 +171,7 @@ public class PhotosServlet extends HttpServlet
                   </div>
                 </div>
                 %s
-            """, gallery.getName(), kids, gallery.getDescription(), gallery.getId(), gallery.getParentId(), gallery.getSortorder(), gallery.getName(), gallery.getHighlight(), gallery.getHighlight(), gallery.getDescription(), description));
+            """, gallery.getName(), kids, galleryService.getNumberOfPhotosInGallery(gallery), gallery.getDescription(), gallery.getId(), gallery.getParentId(), gallery.getSortorder(), gallery.getName(), gallery.getHighlight(), gallery.getHighlight(), gallery.getDescription(), description));
     out.println(HtmlUtils.getFooter());
   }
 

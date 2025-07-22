@@ -15,6 +15,7 @@ import java.util.Objects;
 @Table(name = "Gallery")
 @NamedQuery(name = "Gallery.findAll", query = "SELECT p FROM Gallery p")
 @NamedQuery(name = "Gallery.findSubGalleries", query = "SELECT p FROM Gallery p where p.parentId = :gallery order by p.sortorder")
+@NamedQuery(name = "Gallery.countPhotos", query = "SELECT count(p) FROM GalleryPhotograph p where p.galleryId = :gallery")
 public class Gallery
 {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -37,6 +37,13 @@ public class GalleryService
         return query.getResultList();
     }
 
+    public Long getNumberOfPhotosInGallery(Gallery gallery)
+    {
+        TypedQuery<Long> query = entityManager.createNamedQuery("Gallery.countPhotos", Long.class);
+        query.setParameter("gallery", gallery.getId());
+        return query.getSingleResult();
+    }
+
     public Optional<Gallery> getGallery(Long id)
     {
         return Optional.ofNullable(entityManager.find(Gallery.class, id));
