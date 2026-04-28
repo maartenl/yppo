@@ -2,6 +2,7 @@ package com.mrbear.yppo.services;
 
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.MetadataException;
+import com.mrbear.yppo.entities.Gallery;
 import com.mrbear.yppo.entities.GalleryPhotograph;
 import com.mrbear.yppo.entities.LogLevel;
 import com.mrbear.yppo.entities.Photograph;
@@ -105,6 +106,33 @@ public class PhotoService
     TypedQuery<GalleryPhotograph> query = entityManager.createNamedQuery("GalleryPhotograph.findByPhotograph",
             GalleryPhotograph.class).setParameter("photograph", photograph);
     return query.getResultList();
+  }
+
+  public List<Photograph> getUnallocatedPhotographs()
+  {
+    TypedQuery<Photograph> query = entityManager.createNamedQuery("Photograph.findUnallocatedPhotographs", Photograph.class);
+    return query.getResultList();
+  }
+
+  public void assignPhotographsToGallery(String relativePath, Long galleryId)
+  {
+    Gallery gallery = entityManager.find(Gallery.class, galleryId);
+    TypedQuery<Photograph> query = entityManager.createNamedQuery("Photograph.findUnallocatedPhotographsByRelativePath", Photograph.class);
+    query.setParameter("relativePath", relativePath);
+    query.getResultList().stream()
+            .map(photograph -> createGalleryPhotograph(photograph, gallery))
+            .forEach(galleryPhotograph -> entityManager.persist(galleryPhotograph));
+  }
+
+  private GalleryPhotograph createGalleryPhotograph(Photograph photograph, Gallery gallery)
+  {
+    var result = new GalleryPhotograph();
+    result.setPhotograph(photograph);
+    result.setDescription(null);
+    result.setGalleryId(gallery.getId());
+    result.setName(photograph.getFilename());
+    result.setSortorder(0L);
+    return result;
   }
 }
 

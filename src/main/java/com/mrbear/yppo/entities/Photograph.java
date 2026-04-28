@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 @Table(name = "Photograph")
 @NamedQuery(name = "Photograph.findByFilename", query = "SELECT p FROM Photograph p WHERE p.filename = :filename and p.relativepath = :relativepath")
 @NamedQuery(name = "Photograph.findByStats", query = "SELECT p FROM Photograph p WHERE p.hashstring = :hashstring and p.filesize = :filesize")
+@NamedQuery(name = "Photograph.findUnallocatedPhotographs", query = "SELECT p from Photograph p WHERE not exists (select 1 from GalleryPhotograph gp where gp.photograph = p) order by p.relativepath, p.filename")
+@NamedQuery(name = "Photograph.findUnallocatedPhotographsByRelativePath", query = "SELECT p from Photograph p WHERE p.relativepath like :relativePath and not exists (select 1 from GalleryPhotograph gp where gp.photograph = p) order by p.relativepath, p.filename")
 @NamedQuery(name = "Photograph.findAllPks", query = "SELECT p.id from Photograph p")
 public class Photograph
 {
